@@ -19,9 +19,9 @@ const detectionOptions = {
 };
 
 function preload() {
-    star = loadImage('assets/star.png');
-    heart = loadImage('assets/heart.png');
-    glasses = loadImage('assets/glasses.png');
+    star = loadImage('img/star.png');
+    heart = loadImage('img/heart.png');
+    glasses = loadImage('img/glasses.png');
 }
 
 function setup() {
@@ -30,7 +30,6 @@ function setup() {
 
     frameRate(120);
     initCanvas(x, y);
-    createButtons(x, y);
     initVideo();
 }
 
@@ -38,34 +37,6 @@ function initCanvas(x, y) {
     cnv = createCanvas(360, 270);
     cnv.position(x, y);
     document.getElementById('canvas-container').appendChild(cnv.elt);
-}
-
-function createButtons(x, y) {
-    btns.forEach((btn, idx) => {
-        const { name, itemName: iName } = btn;
-        const element = createButton(name);
-
-        element.position(x + width * idx / 4, y + height);
-        element.mousePressed(function () {
-            itemName = iName;
-        });
-        document.querySelector('.filter-buttons').appendChild(element.elt);
-    });
-
-    button4 = createButton('촬영');
-    button4.position(x + width * 3 / 4, y + height);
-    button4.mousePressed(function () {
-        const data = cnv.canvas.toDataURL();
-        const a = createElement('a');
-        const img = createElement('img');
-        
-        img.size(width / 2, height / 2);
-        img.elt.src = data;
-        a.elt.href = data;
-        a.elt.download = 'image' + str(downloadName++) + '.jpg';
-        a.child(img);
-        document.querySelector('.capture-button').appendChild(a.elt);
-    });
 }
 
 function initVideo() {

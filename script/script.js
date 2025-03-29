@@ -1,10 +1,3 @@
-/**
- * 얼굴 필터 웹 애플리케이션
- * 웹캠을 사용해 얼굴을 인식하고 다양한 필터를 적용합니다.
- * 거울 모드에서 필터가 올바르게 적용되도록 수정됨
- */
-
-// ================ 전역 변수 및 상수 ================
 let faceapi;
 let video;
 let detections;
@@ -14,10 +7,6 @@ let downloadCounter = 0;
 
 // 필터 옵션 설정
 const FILTER_OPTIONS = {
-    STAR: 'star',
-    HEART: 'heart',
-    GLASSES: 'glasses',
-    COMPUTER: 'computer',
     COWBOY: 'cowboy'
 };
 
@@ -27,11 +16,6 @@ const DETECTION_OPTIONS = {
     withDescriptors: false
 };
 
-// ================ 초기화 함수 ================
-
-/**
- * 페이지 로드 완료 시 로딩 표시 숨김
- */
 window.addEventListener("load", () => {
     document.getElementById("loadingProgress").style.display = "none";
 });
@@ -41,12 +25,8 @@ window.addEventListener("load", () => {
  */
 function preload() {
     filterImages = {
-        star: loadImage('img/star.png'),
-        heart: loadImage('img/heart.png'),
-        glasses: loadImage('img/glasses.png'),
-        computer: loadImage('img/computer.jpeg'),
-        cowboyHat: loadImage('img/cowboy_hat.png'),
-        sunglasses: loadImage('img/sunglasses.png')
+        cowboyHat: loadImage('img/cowboy_hat.png', () => console.log('cowboy hat image loaded')),
+        sunglasses: loadImage('img/sunglasses.png', () => console.log('sunglasses image loaded'))
     };
 }
 
@@ -59,31 +39,22 @@ function setup() {
     initVideoAndFaceDetection();
 }
 
-/**
- * 반응형 캔버스 생성
- */
 function createResponsiveCanvas() {
     const canvasContainer = document.getElementById('canvas-container');
     
-    // 디스플레이 너비에 따라 캔버스 크기 설정
     let canvasWidth, canvasHeight;
     
     if (window.innerWidth >= 768) {
-        // 768px 이상일 때 너비 500px, 높이는 비율 유지
         canvasWidth = 500;
-        // 4:3 비율 유지
-        canvasHeight = 375; // 500 * (3/4)
+        canvasHeight = 375;
     } else {
-        // 768px 미만일 때 100% 너비
         canvasWidth = canvasContainer.offsetWidth;
-        // 비율 유지 (4:3)
         canvasHeight = canvasWidth * 0.75;
     }
     
     const canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent(canvasContainer);
 
-    // 창 크기가 변경될 때 캔버스 크기 업데이트
     window.addEventListener('resize', () => {
         if (window.innerWidth >= 768) {
             resizeCanvas(500, 375);
@@ -111,7 +82,6 @@ function modelReady() {
     faceapi.detect(handleFaceDetectionResults);
 }
 
-// ================ 얼굴 인식 처리 함수 ================
 
 /**
  * 얼굴 인식 결과 처리 및 프레임 그리기
@@ -168,26 +138,9 @@ function applyFiltersToDetectedFaces(detections) {
         // 특징점 좌표 가공 수행
         const mirroredDetection = mirrorDetectionCoordinates(detection);
 
-        // 선택된 필터에 따라 적절한 함수 호출
         switch(currentFilter) {
-            case FILTER_OPTIONS.STAR:
-                applyStarFilter(mirroredDetection, scaleFactor);
-                break;
-                
-            case FILTER_OPTIONS.HEART:
-                applyHeartFilter(mirroredDetection, scaleFactor);
-                break;
-                
-            case FILTER_OPTIONS.GLASSES:
-                applyGlassesFilter(mirroredDetection, scaleFactor);
-                break;
-                
             case FILTER_OPTIONS.COWBOY:
                 applyCowboyFilter(mirroredDetection, scaleFactor);
-                break;
-                
-            case FILTER_OPTIONS.COMPUTER:
-                applyComputerFilter(mirroredDetection, scaleFactor);
                 break;
         }
     }
@@ -199,10 +152,8 @@ function applyFiltersToDetectedFaces(detections) {
  * @returns {Object} 좌우 반전된 좌표를 가진 탐지 결과
  */
 function mirrorDetectionCoordinates(detection) {
-    // 원본 객체를 변경하지 않도록 깊은 복사
     const mirrored = JSON.parse(JSON.stringify(detection));
 
-    // 각 특징점의 x 좌표를 반전 (width - x 형태로)
     if (mirrored.parts) {
         Object.keys(mirrored.parts).forEach(partName => {
             const part = mirrored.parts[partName];
@@ -216,7 +167,6 @@ function mirrorDetectionCoordinates(detection) {
         });
     }
 
-    // alignedRect의 좌표도 반전
     if (mirrored.alignedRect && typeof mirrored.alignedRect._x === 'number') {
         mirrored.alignedRect._x = width - mirrored.alignedRect._x - mirrored.alignedRect._width;
     }
@@ -234,48 +184,6 @@ function hasValidFacialFeatures(detection) {
            detection.parts.leftEye && 
            detection.parts.rightEye && 
            detection.parts.nose;
-}
-
-// ================ 필터 적용 함수 ================
-
-/**
- * 별 필터 적용 - 양쪽 눈에 별 이미지 추가
- * @param {Object} detection - 얼굴 인식 결과
- * @param {number} scaleFactor - 얼굴 크기 비례 계수
- */
-function applyStarFilter(detection, scaleFactor) {
-    const { leftEye, rightEye } = detection.parts;
-    const size = 30 * scaleFactor;
-    
-    if (leftEye && leftEye.length > 0) {
-        const center = calculateCenterPoint(leftEye);
-        image(filterImages.star, center.x - size/2, center.y - size/2, size, size);
-    }
-    
-    if (rightEye && rightEye.length > 0) {
-        const center = calculateCenterPoint(rightEye);
-        image(filterImages.star, center.x - size/2, center.y - size/2, size, size);
-    }
-}
-
-/**
- * 하트 필터 적용 - 양쪽 눈에 하트 이미지 추가
- * @param {Object} detection - 얼굴 인식 결과
- * @param {number} scaleFactor - 얼굴 크기 비례 계수
- */
-function applyHeartFilter(detection, scaleFactor) {
-    const { leftEye, rightEye } = detection.parts;
-    const size = 30 * scaleFactor;
-    
-    if (leftEye && leftEye.length > 0) {
-        const center = calculateCenterPoint(leftEye);
-        image(filterImages.heart, center.x - size/2, center.y, size, size);
-    }
-    
-    if (rightEye && rightEye.length > 0) {
-        const center = calculateCenterPoint(rightEye);
-        image(filterImages.heart, center.x - size/2, center.y, size, size);
-    }
 }
 
 /**
@@ -351,8 +259,6 @@ function applyComputerFilter(detection, scaleFactor) {
     }
 }
 
-// ================ 유틸리티 함수 ================
-
 /**
  * 특징점 배열에서 중심점 계산
  * @param {Array} points - 특징점 배열
@@ -383,8 +289,6 @@ function calculateCenterPoint(points) {
         y: totalY / validPoints
     };
 }
-
-// ================ 이미지 캡처 및 다운로드 함수 ================
 
 /**
  * 현재 캔버스를 이미지로 캡처하고 미리보기에 추가
@@ -423,6 +327,7 @@ function downloadImage(element) {
  */
 function setFilter(filterId) {
     currentFilter = filterId;
+    console.log(`필터가 ${currentFilter}로 설정되었습니다.`);
 }
 
 // ================ 전역 함수 노출 ================
