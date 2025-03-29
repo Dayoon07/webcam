@@ -36,7 +36,7 @@ class Core {
             canvasHeight = 375;
         } else {
             canvasWidth = canvasContainer.offsetWidth;
-            canvasHeight = canvasWidth * 0.75;
+            canvasHeight = 650;
         }
         
         const canvas = createCanvas(canvasWidth, canvasHeight);
@@ -46,7 +46,7 @@ class Core {
             if (window.innerWidth >= 768) {
                 resizeCanvas(500, 375);
             } else {
-                resizeCanvas(canvasContainer.offsetWidth, canvasContainer.offsetWidth * 0.75);
+                resizeCanvas(canvasContainer.offsetWidth, 635);
             }
         });
     }
