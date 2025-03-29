@@ -17,9 +17,9 @@ class Core {
      */
     preloadImages() {
         this.filterImages = {
-            cowboyHat: loadImage('img/cowboy_hat.png', () => console.log('cowboy hat image loaded')),
-            sunglasses: loadImage('img/sunglasses.png', () => console.log('sunglasses image loaded')),
-            heartEye: loadImage('img/heart.png', () => console.log('heart eye image loaded'))
+            cowboyHat: loadImage('http://dayoon07.github.io/webcam/img/cowboy_hat.png', () => console.log('cowboy hat image loaded')),
+            sunglasses: loadImage('http://dayoon07.github.io/webcam/img/sunglasses.png', () => console.log('sunglasses image loaded')),
+            heartEye: loadImage('http://dayoon07.github.io/webcam/img/heart.png', () => console.log('heart eye image loaded'))
         };
     }
 
