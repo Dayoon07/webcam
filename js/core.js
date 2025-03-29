@@ -32,21 +32,33 @@ class Core {
         let canvasWidth, canvasHeight;
         
         if (window.innerWidth >= 768) {
+            // 데스크톱 환경
             canvasWidth = 500;
             canvasHeight = 375;
         } else {
+            // 모바일 환경
             canvasWidth = canvasContainer.offsetWidth;
-            canvasHeight = 650;
+            // 화면 비율을 고려한 높이 설정 (4:3 비율 유지)
+            canvasHeight = Math.min(
+                window.innerHeight * 0.6, // 화면 높이의 60%를 최대 높이로 제한
+                canvasWidth * 0.75       // 4:3 비율 유지
+            );
         }
         
         const canvas = createCanvas(canvasWidth, canvasHeight);
         canvas.parent(canvasContainer);
-
+    
+        // 리사이즈 이벤트 처리
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 768) {
                 resizeCanvas(500, 375);
             } else {
-                resizeCanvas(canvasContainer.offsetWidth, 635);
+                const newWidth = canvasContainer.offsetWidth;
+                const newHeight = Math.min(
+                    window.innerHeight * 0.6,
+                    newWidth * 0.75
+                );
+                resizeCanvas(newWidth, newHeight);
             }
         });
     }
