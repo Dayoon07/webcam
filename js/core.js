@@ -63,12 +63,25 @@ class Core {
                 break;
             
             case Config.ASPECT_RATIOS.RATIO_9_16:
-                canvasWidth = containerWidth;
-                canvasHeight = containerWidth * (16/9);
-                // 높이가 너무 크면 제한
-                if (canvasHeight > window.innerHeight * 0.7) {
-                    canvasHeight = window.innerHeight * 0.7;
-                    canvasWidth = canvasHeight * (9/16);
+                // 모바일 화면 대응
+                if (window.innerWidth < 768) {
+                    // 모바일에서는 컨테이너 너비의 100%를 사용
+                    canvasWidth = window.innerWidth;
+                    canvasHeight = canvasWidth * (16/9);
+                    
+                    // 높이가 화면보다 너무 커지지 않도록 제한
+                    if (canvasHeight > window.innerHeight * 0.8) {
+                        canvasHeight = window.innerHeight * 0.8;
+                        canvasWidth = canvasHeight * (9/16);
+                    }
+                } else {
+                    // 기존 데스크톱 로직 유지
+                    canvasWidth = containerWidth;
+                    canvasHeight = containerWidth * (16/9);
+                    if (canvasHeight > window.innerHeight * 0.7) {
+                        canvasHeight = window.innerHeight * 0.7;
+                        canvasWidth = canvasHeight * (9/16);
+                    }
                 }
                 break;
             
@@ -76,14 +89,14 @@ class Core {
             default:
                 if (window.innerWidth >= 768) {
                     // 데스크톱 환경
-                    canvasWidth = 500;
-                    canvasHeight = 375;
+                    canvasWidth = containerWidth > 500 ? 500 : containerWidth;
+                    canvasHeight = canvasWidth * 0.75; // 4:3 비율 유지
                 } else {
                     // 모바일 환경
-                    canvasWidth = containerWidth;
+                    canvasWidth = containerWidth; // 컨테이너 너비의 100%
                     // 화면 비율을 고려한 높이 설정
                     canvasHeight = Math.min(
-                        window.innerHeight * 0.6, // 화면 높이의 60%를 최대 높이로 제한
+                        window.innerHeight * 0.7, // 화면 높이의 70%를 최대 높이로 제한
                         canvasWidth * 0.75       // 4:3 비율 유지
                     );
                 }
