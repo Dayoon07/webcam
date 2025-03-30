@@ -1,0 +1,31 @@
+@charset "UTF-8";
+#canvas-container {
+    width: 100%;
+    min-height: 300px;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+.control-panel {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.capture-button {
+    transition: all 0.2s ease;
+}
+.capture-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+}
+.filter-button.active {
+    background-color: #3b82f6;
+    color: white;
+}
+.ratio-button.active {
+    background-color: #6b7280;
+    color: white;
+}

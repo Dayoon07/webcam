@@ -5,6 +5,7 @@ class Core {
         this.filters = null;
         this.faceDetection = null;
         this.ui = null;
+        this.currentAspectRatio = Config.ASPECT_RATIOS.FULL; // 기본 비율은 전체화면
     }
 
     /**
@@ -17,9 +18,10 @@ class Core {
      */
     preloadImages() {
         this.filterImages = {
-            cowboyHat: loadImage('http://dayoon07.github.io/webcam/img/cowboy_hat.png', () => console.log('cowboy hat image loaded')),
-            sunglasses: loadImage('http://dayoon07.github.io/webcam/img/sunglasses.png', () => console.log('sunglasses image loaded')),
-            heartEye: loadImage('http://dayoon07.github.io/webcam/img/heart.png', () => console.log('heart eye image loaded'))
+            cowboyHat: loadImage('https://dayoon07.github.io/webcam/img/cowboy_hat.png', () => console.log('cowboy_hat 이미지 로드됨')),
+            sunglasses: loadImage('https://dayoon07.github.io/webcam/img/sunglasses.png', () => console.log('sunglasses 이미지 로드됨')),
+            heartEye: loadImage('https://dayoon07.github.io/webcam/img/heart.png', () => console.log('heart_eye 이미지 로드됨')),
+            white_circle: loadImage('https://dayoon07.github.io/webcam/img/white_circle.png', () => console.log('white_circle 이미지 로드됨'))
         };
     }
 
@@ -28,39 +30,84 @@ class Core {
      */
     createResponsiveCanvas() {
         const canvasContainer = document.getElementById('canvas-container');
-        
-        let canvasWidth, canvasHeight;
-        
-        if (window.innerWidth >= 768) {
-            // 데스크톱 환경
-            canvasWidth = 500;
-            canvasHeight = 375;
-        } else {
-            // 모바일 환경
-            canvasWidth = canvasContainer.offsetWidth;
-            // 화면 비율을 고려한 높이 설정 (4:3 비율 유지)
-            canvasHeight = Math.min(
-                window.innerHeight * 0.6, // 화면 높이의 60%를 최대 높이로 제한
-                canvasWidth * 0.75       // 4:3 비율 유지
-            );
-        }
-        
-        const canvas = createCanvas(canvasWidth, canvasHeight);
-        canvas.parent(canvasContainer);
+    
+        // p5.js의 createCanvas()는 기본적으로 body에 추가되므로 parent()를 이용해 이동
+        this.canvas = createCanvas(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        this.canvas.parent(canvasContainer); // canvas를 특정 div 내부에 배치
+    
+        this.applyAspectRatio(canvasContainer);
     
         // 리사이즈 이벤트 처리
         window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                resizeCanvas(500, 375);
-            } else {
-                const newWidth = canvasContainer.offsetWidth;
-                const newHeight = Math.min(
-                    window.innerHeight * 0.6,
-                    newWidth * 0.75
-                );
-                resizeCanvas(newWidth, newHeight);
-            }
+            this.applyAspectRatio(canvasContainer);
         });
+    }
+
+    /**
+     * 선택된 비율에 따라 캔버스 크기 적용
+     * @param {HTMLElement} container - 캔버스 컨테이너 요소
+     */
+    applyAspectRatio(container) {
+        let canvasWidth, canvasHeight;
+        const containerWidth = container.offsetWidth;
+        
+        switch(this.currentAspectRatio) {
+            case Config.ASPECT_RATIOS.RATIO_4_3:
+                canvasWidth = containerWidth;
+                canvasHeight = containerWidth * (3/4);
+                break;
+            
+            case Config.ASPECT_RATIOS.RATIO_16_9:
+                canvasWidth = containerWidth;
+                canvasHeight = containerWidth * (9/16);
+                break;
+            
+            case Config.ASPECT_RATIOS.RATIO_9_16:
+                canvasWidth = containerWidth;
+                canvasHeight = containerWidth * (16/9);
+                // 높이가 너무 크면 제한
+                if (canvasHeight > window.innerHeight * 0.7) {
+                    canvasHeight = window.innerHeight * 0.7;
+                    canvasWidth = canvasHeight * (9/16);
+                }
+                break;
+            
+            case Config.ASPECT_RATIOS.FULL:
+            default:
+                if (window.innerWidth >= 768) {
+                    // 데스크톱 환경
+                    canvasWidth = 500;
+                    canvasHeight = 375;
+                } else {
+                    // 모바일 환경
+                    canvasWidth = containerWidth;
+                    // 화면 비율을 고려한 높이 설정
+                    canvasHeight = Math.min(
+                        window.innerHeight * 0.6, // 화면 높이의 60%를 최대 높이로 제한
+                        canvasWidth * 0.75       // 4:3 비율 유지
+                    );
+                }
+                break;
+        }
+        
+        resizeCanvas(canvasWidth, canvasHeight);
+        
+        // 비디오 크기도 캔버스에 맞게 조정
+        if (this.video) this.video.size(canvasWidth, canvasHeight);
+    }
+
+    /**
+     * 비율 설정 함수
+     * @param {string} ratioId - 설정할 비율 ID
+     */
+    setAspectRatio(ratioId) {
+        if (Object.values(Config.ASPECT_RATIOS).includes(ratioId)) {
+            this.currentAspectRatio = ratioId;
+            this.applyAspectRatio(document.getElementById('canvas-container'));
+            console.log(`비율이 ${this.currentAspectRatio}로 설정되었습니다.`);
+        } else {
+            console.error(`유효하지 않은 비율: ${ratioId}`);
+        }
     }
 
     /**
@@ -86,6 +133,6 @@ class Core {
         
         this.ui = new UI(this.filters);
         this.ui.hideLoadingProgress();
-        this.ui.exposeFunctionsToWindow();
+        this.ui.exposeFunctionsToWindow(this); // 코어 객체도 UI에 전달
     }
 }

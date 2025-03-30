@@ -4,41 +4,213 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>웹 캠 필터</title>
+
+    <link rel="stylesheet" href="/css/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-
-    <div id="loadingProgress" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        background: white; display: flex; justify-content: center; align-items: center; z-index: 9999;">
-    </div>
-
-    <div id="canvas-container" class="w-full h-full"></div>
-    
-    <div class="flex items-center p-4 bg-gray-50 border-t border-gray-200">
-        <div class="flex flex-wrap gap-2 flex-grow">
-            <button onclick="window.func.setFilter('cowboy')" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors">카우보이</button>
-            <button onclick="window.func.setFilter('eyeHeart')" class="bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 rounded transition-colors">눈 하트</button>
+<body class="bg-gray-100">
+    <!-- 로딩 화면 -->
+    <div id="loadingProgress" class="fixed inset-0 bg-white flex justify-center items-center z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-2"></div>
+            <p class="text-gray-600">카메라 준비 중...</p>
         </div>
     </div>
 
-    <div class="w-full fixed left-8 bottom-8 p-6">
-        <div onclick="window.func.captureImage()" title="사진 찍기" aria-label="사진 찍기" class="w-20 h-20 rounded-full border-4 border-black border shadow-lg hover:shadow-xl transition cursor-pointer"></div>
+    <!-- 메인 레이아웃 -->
+    <div class="max-w-4xl mx-auto px-4 py-6 w-full flex flex-col">
+        <!-- 캔버스 컨테이너 - 웹캠이 표시될 곳 -->
+        <div id="canvas-container" class="w-full rounded-lg overflow-hidden shadow-lg mb-6"></div>
+        
+        <!-- 캡처 버튼 -->
+        <div class="flex justify-center my-4">
+            <div onclick="window.func.captureAndDownloadImage()" title="사진 찍기" aria-label="사진 찍기" class="capture-button w-16 h-16 
+                md:w-20 md:h-20 rounded-full bg-white border-4 border-blue-500 flex items-center justify-center cursor-pointer shadow-lg">
+                <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-500"></div>
+            </div>
+        </div>
+        
+        <!-- 컨트롤 패널 -->
+        <div class="control-panel p-4 mt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- 필터 옵션 -->
+            <div class="md:col-span-1">
+                <h3 class="text-lg font-semibold mb-2 text-gray-700">필터</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button id="filter-white_circle" onclick="selectFilter('white_circle')" class="filter-button bg-white hover:bg-blue-500 hover:text-white 
+                        text-gray-800 font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        얼굴 가림
+                    </button>
+                    <button id="filter-cowboy" onclick="selectFilter('cowboy')" class="filter-button bg-white hover:bg-blue-500 hover:text-white 
+                        text-gray-800 font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        카우보이
+                    </button>
+                    <button id="filter-eyeHeart" onclick="selectFilter('eyeHeart')" class="filter-button bg-white hover:bg-blue-500 hover:text-white 
+                        text-gray-800 font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        눈 하트
+                    </button>
+                    <button id="filter-none" onclick="selectFilter('')" class="filter-button bg-white hover:bg-blue-500 hover:text-white text-gray-800 
+                        font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        없음
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 비율 설정 -->
+            <div class="md:col-span-1">
+                <h3 class="text-lg font-semibold mb-2 text-gray-700">비율 설정</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button id="ratio-full" onclick="selectRatio('full')" class="ratio-button bg-white hover:bg-gray-500 hover:text-white text-gray-800 
+                        font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        Full
+                    </button>
+                    <button id="ratio-4:3" onclick="selectRatio('4:3')" class="ratio-button bg-white hover:bg-gray-500 hover:text-white text-gray-800 
+                        font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        4:3
+                    </button>
+                    <button id="ratio-16:9" onclick="selectRatio('16:9')" class="ratio-button bg-white hover:bg-gray-500 hover:text-white text-gray-800 
+                        font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        16:9
+                    </button>
+                    <button id="ratio-9:16" onclick="selectRatio('9:16')" class="ratio-button bg-white hover:bg-gray-500 hover:text-white text-gray-800 
+                        font-medium py-2 px-4 rounded border border-gray-300 transition-colors">
+                        9:16
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 카메라 선택 -->
+            <div class="md:col-span-1">
+                <h3 class="text-lg font-semibold mb-2 text-gray-700">카메라 설정</h3>
+                <div class="space-y-2">
+                    <div>
+                        <label for="videoSource" class="block text-sm font-medium text-gray-700 mb-1">카메라</label>
+                        <select id="videoSource" class="w-full border border-gray-300 rounded p-2 text-sm">
+                            <option value="">선택하세요</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="audioSource" class="block text-sm font-medium text-gray-700 mb-1">마이크</label>
+                        <select id="audioSource" class="w-full border border-gray-300 rounded p-2 text-sm">
+                            <option value="">선택하세요</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div class="capture-preview grid grid-cols-2 md:grid-cols-3 gap-3" onclick="if(event.target.classList.contains('capture-preview-image')) window.func.downloadImage(event.target)"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
     <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js" type="text/javascript"></script>
 
     <!-- 모듈화된 JS 파일들 -->
-    <script src="https://dayoon07.github.io/webcam/js/config.js"></script>
-    <script src="https://dayoon07.github.io/webcam/js/utils.js"></script>
-    <script src="https://dayoon07.github.io/webcam/js/filters.js"></script>
-    <script src="https://dayoon07.github.io/webcam/js/faceDetection.js"></script>
-    <script src="https://dayoon07.github.io/webcam/js/ui.js"></script>
-    <script src="https://dayoon07.github.io/webcam/js/core.js"></script>
-    <script src="https://dayoon07.github.io/webcam/js/main.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/filters.js"></script>
+    <script src="/js/faceDetection.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/core.js"></script>
+    <script src="/js/main.js"></script>
 
+    <script>
+        // 활성화된 버튼 상태 관리
+        function selectFilter(filterId) {
+            // 모든 필터 버튼에서 active 클래스 제거
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 선택된 필터 버튼에 active 클래스 추가
+            if (filterId) {
+                document.getElementById('filter-' + filterId)?.classList.add('active');
+            } else {
+                document.getElementById('filter-none')?.classList.add('active');
+            }
+            
+            // 필터 설정 함수 호출
+            window.func.setFilter(filterId);
+        }
+        
+        function selectRatio(ratioId) {
+            // 모든 비율 버튼에서 active 클래스 제거
+            document.querySelectorAll('.ratio-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 선택된 비율 버튼에 active 클래스 추가
+            document.getElementById('ratio-' + ratioId)?.classList.add('active');
+            
+            // 비율 설정 함수 호출
+            window.func.setAspectRatio(ratioId);
+        }
+
+        // 초기 상태 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            // 기본 필터 없음 활성화
+            document.getElementById('filter-none')?.classList.add('active');
+            // 기본 비율 full 활성화
+            document.getElementById('ratio-full')?.classList.add('active');
+        });
+
+        const audioSelect = document.querySelector('select#audioSource');
+        const videoSelect = document.querySelector('select#videoSource');
+
+        // 디바이스 정보를 가져오는 함수
+        function getDevices() {
+            return navigator.mediaDevices.enumerateDevices();
+        }
+
+        // 장치 목록을 받아서 select 옵션에 추가하는 함수
+        function gotDevices(deviceInfos) {
+            console.log('Available input and output devices:', deviceInfos);
+            for (const deviceInfo of deviceInfos) {
+                const option = document.createElement('option');
+                option.value = deviceInfo.deviceId;
+
+                if (deviceInfo.kind === 'audioinput') {
+                    option.text = deviceInfo.label || `Microphone ${audioSelect.length + 1}`;
+                    audioSelect.appendChild(option);
+                } else if (deviceInfo.kind === 'videoinput') {
+                    option.text = deviceInfo.label || `Camera ${videoSelect.length + 1}`;
+                    videoSelect.appendChild(option);
+                }
+            }
+        }
+
+        // 비디오 및 오디오 스트림을 가져오는 함수
+        function getStream() {
+            const audioSource = audioSelect.value;
+            const videoSource = videoSelect.value;
+
+            const constraints = {
+                audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+                video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+            };
+
+            return navigator.mediaDevices.getUserMedia(constraints)
+                .then(gotStream)
+                .catch(handleError);
+        }
+
+        // 스트림을 처리하는 함수
+        function gotStream(stream) {
+            const videoElement = document.querySelector('video');
+            if (videoElement) {
+                videoElement.srcObject = stream;
+            }
+        }
+
+        // 오류 처리 함수
+        function handleError(error) {
+            console.error('Error: ', error);
+        }
+
+        // 장치 목록을 가져와서 출력
+        getDevices().then(gotDevices);
+
+        // 스트림을 가져오는 기능
+        audioSelect.onchange = getStream;
+        videoSelect.onchange = getStream;
+    </script>
 </body>
 </html>
