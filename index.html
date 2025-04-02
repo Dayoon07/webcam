@@ -38,24 +38,28 @@
         
         <!-- 필터 옵션 -->
         <div id="filter-options" class="hidden">
-            <div class="flex flex-wrap gap-2 mt-20">
-                <button id="filter-white_circle" onclick="selectFilter('white_circle')" class="filter-button">얼굴 가림</button>
-                <button id="filter-cowboy" onclick="selectFilter('cowboy')" class="filter-button">카우보이</button>
-                <button id="filter-eyeHeart" onclick="selectFilter('eyeHeart')" class="filter-button">눈 하트</button>
-                <button id="filter-none" onclick="selectFilter('')" class="filter-button">없음</button>
+            <div class="flex flex-wrap gap-2 mt-16">
+                <button id="filter-white_circle" onclick="selectFilter('white_circle')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">얼굴 가림</button>
+                <button id="filter-cowboy" onclick="selectFilter('cowboy')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">카우보이</button>
+                <button id="filter-eyeHeart" onclick="selectFilter('eyeHeart')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">눈 하트</button>
+                <button id="filter-none" onclick="selectFilter('')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">없음</button>
             </div>
         </div>
         
         <!-- 설정 모달 (비율 + 카메라 설정) -->
         <div id="settingsModal" class="hidden">
             <!-- 비율 설정 -->
-            <div id="ratioSetting">
+            <div id="ratioSetting" class="mt-16">
                 <h3 class="text-lg font-semibold mb-2 text-gray-700">비율 설정</h3>
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="selectRatio('full')" class="ratio-button">Full</button>
-                    <button onclick="selectRatio('4:3')" class="ratio-button">4:3</button>
-                    <button onclick="selectRatio('16:9')" class="ratio-button">16:9</button>
-                    <button onclick="selectRatio('9:16')" class="ratio-button">9:16</button>
+                    <button class="ratio-button px-6 py-2 text-gray-700 bg-gray-100 rounded-lg shadow-sm transition-all hover:bg-gray-200 
+                        hover:text-black active:scale-95" onclick="selectRatio('full')" >Full</button>
+                    <button class="ratio-button px-6 py-2 text-gray-700 bg-gray-100 rounded-lg shadow-sm transition-all hover:bg-gray-200 
+                        hover:text-black active:scale-95" onclick="selectRatio('4:3')">4:3</button>
+                    <button class="ratio-button px-6 py-2 text-gray-700 bg-gray-100 rounded-lg shadow-sm transition-all hover:bg-gray-200 
+                        hover:text-black active:scale-95" onclick="selectRatio('16:9')">16:9</button>
+                    <button class="ratio-button px-6 py-2 text-gray-700 bg-gray-100 rounded-lg shadow-sm transition-all hover:bg-gray-200 
+                        hover:text-black active:scale-95" onclick="selectRatio('9:16')">9:16</button>
                 </div>
             </div>
     
@@ -63,15 +67,19 @@
             <div id="camSetting" class="mt-4">
                 <h3 class="text-lg font-semibold mb-2 text-gray-700">카메라 설정</h3>
                 <div>
-                    <label for="videoSource">카메라</label>
-                    <select id="videoSource">
-                        <option value="">선택하세요</option>
+                    <label for="videoSource" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">카메라</label>
+                    <select id="videoSource" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                        focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white 
+                        dark:focus:ring-black dark:focus:border-blue-500 cursor-pointer">
+                        <option value="">설정 없음</option>
                     </select>
                 </div>
-                <div>
-                    <label for="audioSource">마이크</label>
-                    <select id="audioSource">
-                        <option value="">선택하세요</option>
+                <div class="mt-2">
+                    <label for="audioSource" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">마이크</label>
+                    <select id="audioSource" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                        focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white 
+                        dark:focus:ring-black dark:focus:border-blue-500 cursor-pointer">
+                        <option value="">설정 없음</option>
                     </select>
                 </div>
             </div>

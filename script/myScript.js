@@ -1,17 +1,14 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
-    setupEventListeners();
-});
-
-// 이벤트 리스너 설정
-function setupEventListeners() {
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeAllModals();
     });
-}
 
-// 📌 필터 옵션 열기/닫기
+    
+
+});
+
 function openFilter() {
     toggleModal("filter-options", true);
 }
@@ -20,50 +17,44 @@ function closeFilter() {
     toggleModal("filter-options", false);
 }
 
-// 📌 설정 모달 열기 (비율 설정 + 카메라 설정 함께)
 function openSetting() {
     toggleModal("settingsModal", true);
 }
 
-// 📌 설정 모달 닫기
 function closeSetting() {
     toggleModal("settingsModal", false);
 }
 
-// 📌 ESC 키로 모든 모달 닫기
 function closeAllModals() {
     closeFilter();
     closeSetting();
 }
 
-// 📌 공통 모달 열고 닫는 함수
 function toggleModal(id, isOpen) {
     const element = document.getElementById(id);
     if (!element) return;
 
     if (isOpen) {
-        element.classList.add("fixed", "top-0", "left-0", "w-full", "h-full", "bg-white", "z-50", "p-4", "flex", "flex-col", "items-center", "justify-center");
+        element.classList.add("fixed", "top-0", "left-0", "w-full", "h-full", "bg-white", "z-50", "p-4");
         element.classList.remove("hidden");
         addCloseButton(element, () => toggleModal(id, false));
     } else {
-        element.classList.remove("fixed", "top-0", "left-0", "w-full", "h-full", "bg-white", "z-50", "p-4", "flex", "flex-col", "items-center", "justify-center");
+        element.classList.remove("fixed", "top-0", "left-0", "w-full", "h-full", "bg-white", "z-50", "p-4");
         element.classList.add("hidden");
         removeCloseButton(element);
     }
 }
 
-// 📌 닫기 버튼 추가
 function addCloseButton(parent, closeFunction) {
     if (!parent.querySelector(".close-btn")) {
         const closeBtn = document.createElement("div");
         closeBtn.innerHTML = "&times;";
-        closeBtn.className = "close-btn text-4xl fixed top-8 right-8 hover:cursor-pointer";
+        closeBtn.className = "close-btn text-5xl fixed top-4 right-4 hover:cursor-pointer";
         closeBtn.onclick = closeFunction;
         parent.appendChild(closeBtn);
     }
 }
 
-// 📌 닫기 버튼 제거
 function removeCloseButton(parent) {
     const closeBtn = parent.querySelector(".close-btn");
     if (closeBtn) closeBtn.remove();
