@@ -9,22 +9,11 @@
     overflow: hidden;
     position: relative;
 }
-.control-panel {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-}
-.capture-button {
-    transition: all 0.2s ease;
-}
-.capture-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-}
 .filter-button.active {
-    background-color: #3b82f6;
+    background-color: black;
     color: white;
 }
 .ratio-button.active {
-    background-color: #6b7280;
+    background-color: black;
     color: white;
 }
