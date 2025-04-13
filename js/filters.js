@@ -40,7 +40,7 @@ class Filters {
                     this.applyEyeHeartFilter(mirroredDetection, scaleFactor);
                     break;
                 case Config.FILTER_OPTIONS.WHITE_CIRCLE:
-                    this.applyWhiteCircleFilter(mirroredDetection, scaleFactor);
+                    this.applyWhite_circleFilter(mirroredDetection, scaleFactor);
                     break;
             }
         }
@@ -364,34 +364,17 @@ class Filters {
      */
     applyFiltersToDetectedFaces(detections) {
         for (const detection of detections) {
-            // 안전 확인: 얼굴 부위가 탐지되었는지
-            if (!Utils.hasValidFacialFeatures(detection)) {
-                continue; // 특징점이 없으면 다음 얼굴로 건너뜀
-            }
-
-            // 얼굴 크기에 따라 필터 크기 조정 계수
+            if (!Utils.hasValidFacialFeatures(detection)) continue;
+    
             const faceWidth = detection.alignedRect._width;
-            const scaleFactor = faceWidth / 180; // 기준 얼굴 너비를 180px로 가정
-
-            // 거울 모드에서 좌표 보정을 위한 준비
-            // 특징점 좌표 가공 수행
+            const scaleFactor = faceWidth / 180;
             const mirroredDetection = Utils.mirrorDetectionCoordinates(detection);
-
-            // Config.FILTER_OPTIONS의 모든 필터를 확인하고 현재 선택된 필터 적용
-            if (Config && Config.FILTER_OPTIONS) {
-                // 모든 필터 옵션에 대해 확인
-                for (const filterKey in Config.FILTER_OPTIONS) {
-                    const filterId = Config.FILTER_OPTIONS[filterKey];
-                    // 현재 선택된 필터에 해당하는 경우만 적용
-                    if (this.currentFilter === filterId) {
-                        // 필터 적용 함수가 정의되어 있는지 확인
-                        const applyMethodName = `apply${filterId.charAt(0).toUpperCase() + filterId.slice(1)}Filter`;
-                        if (typeof this[applyMethodName] === 'function') {
-                            this[applyMethodName](mirroredDetection, scaleFactor);
-                        }
-                        break;
-                    }
-                }
+    
+            const methodName = `apply${this.currentFilter.charAt(0).toUpperCase()}${this.currentFilter.slice(1)}Filter`;
+            if (typeof this[methodName] === 'function') {
+                this[methodName](mirroredDetection, scaleFactor);
+            } else {
+                console.warn(`해당 필터에 대한 적용 함수가 없습니다: ${methodName}`);
             }
         }
     }
@@ -401,21 +384,47 @@ class Filters {
      * @param {Object} detection - 얼굴 인식 결과
      * @param {number} scaleFactor - 얼굴 크기 비례 계수
      */
-    applyWhiteCircleFilter(detection, scaleFactor) {
+    applyWhite_circleFilter(detection, scaleFactor) {
+        console.log("applyWhiteCircleFilter 실행됨");
+        // 얼굴 경계 상자 확인
+        if (!detection.alignedRect || !detection.alignedRect._box) {
+            console.error("얼굴 경계 상자 정보가 없습니다");
+            return;
+        }
+        
         // 얼굴 경계 상자 정보 가져오기
         const box = detection.alignedRect._box;
         const faceWidth = box._width;
         const faceHeight = box._height;
         
-        // 필터 크기 조정 (원형이므로 더 큰 값을 기준으로 함)
-        const filterSize = Math.max(faceWidth, faceHeight) * 1.2;
-        const filterX = box._x + faceWidth/2 - filterSize/2;
-        const filterY = box._y + faceHeight/2 - filterSize/2;
+        // 필터 크기 조정 (더 크게 만들어서 얼굴 전체 가리기)
+        const filterSize = Math.max(faceWidth, faceHeight) * 1.5;
         
-        // 이미지 적용
-        image(this.filterImages.white_circle, filterX, filterY, filterSize, filterSize);
+        // 얼굴 중심 위치 계산
+        const faceCenterX = box._x + faceWidth/2;
+        const faceCenterY = box._y + faceHeight/2;
         
-        // 디버깅 메시지
+        // 필터 위치 계산
+        const filterX = faceCenterX - filterSize/2;
+        const filterY = faceCenterY - filterSize/2;
+
+        // 이미지가 있는지 확인
+        if (!this.filterImages.white_circle) {
+            console.error("white_circle 이미지가 로드되지 않았습니다");
+            
+            // 이미지 대체 흰색 원
+            push();
+            fill(255);
+            noStroke();
+            ellipse(faceCenterX, faceCenterY, filterSize, filterSize);
+            pop();
+        } else {
+            push();
+            // 이미지 적용
+            image(this.filterImages.white_circle, filterX, filterY, filterSize, filterSize);
+            pop();
+        }
+        
         console.log("흰색 원 필터 적용됨", filterX, filterY, filterSize);
     }
 }
