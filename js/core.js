@@ -21,7 +21,8 @@ class Core {
             cowboyHat: loadImage('https://dayoon07.github.io/webcam/img/cowboy_hat.png', () => console.log('cowboy_hat 이미지 로드됨')),
             sunglasses: loadImage('https://dayoon07.github.io/webcam/img/sunglasses.png', () => console.log('sunglasses 이미지 로드됨')),
             heartEye: loadImage('https://dayoon07.github.io/webcam/img/heart.png', () => console.log('heart_eye 이미지 로드됨')),
-            white_circle: loadImage('https://dayoon07.github.io/webcam/img/white_circle.png', () => console.log('white_circle 이미지 로드됨'))
+            white_circle: loadImage('https://dayoon07.github.io/webcam/img/white_circle.png', () => console.log('white_circle 이미지 로드됨')),
+            
         };
     }
 

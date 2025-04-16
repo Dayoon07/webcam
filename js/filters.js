@@ -400,14 +400,18 @@ class Filters {
         // 필터 크기 조정 (더 크게 만들어서 얼굴 전체 가리기)
         const filterSize = Math.max(faceWidth, faceHeight) * 1.5;
         
-        // 얼굴 중심 위치 계산
+        // 캔버스의 기준 좌표계에 맞춰 얼굴 중심 위치 계산
         const faceCenterX = box._x + faceWidth/2;
         const faceCenterY = box._y + faceHeight/2;
         
+        // 비디오 입력과 출력 캔버스 간의 좌우 반전 해결
+        // 화면 너비를 기준으로 좌표를 반전시킵니다
+        const adjustedCenterX = width - faceCenterX;
+        
         // 필터 위치 계산
-        const filterX = faceCenterX - filterSize/2;
+        const filterX = adjustedCenterX - filterSize/2;
         const filterY = faceCenterY - filterSize/2;
-
+    
         // 이미지가 있는지 확인
         if (!this.filterImages.white_circle) {
             console.error("white_circle 이미지가 로드되지 않았습니다");
@@ -416,7 +420,7 @@ class Filters {
             push();
             fill(255);
             noStroke();
-            ellipse(faceCenterX, faceCenterY, filterSize, filterSize);
+            ellipse(adjustedCenterX, faceCenterY, filterSize, filterSize);
             pop();
         } else {
             push();

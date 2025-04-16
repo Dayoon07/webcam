@@ -7,7 +7,11 @@ const Config = {
     FILTER_OPTIONS: {
         COWBOY: 'cowboy',
         EYE_HEART: 'eyeHeart',
-        WHITE_CIRCLE: 'white_circle'
+        WHITE_CIRCLE: 'white_circle',
+        CAT_FACE: 'cat_face',
+        DOG_FACE: 'dog_face',
+        BEAR_FACE: 'bear_face',
+        RAINBOW_BG: 'rainbow_bg'
     },
 
     // 비율 옵션 설정
