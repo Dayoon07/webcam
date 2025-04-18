@@ -11,7 +11,8 @@ const Config = {
         CAT_FACE: 'cat_face',
         DOG_FACE: 'dog_face',
         BEAR_FACE: 'bear_face',
-        RAINBOW_BG: 'rainbow_bg'
+        RAINBOW_BG: 'rainbow_bg',
+        GRADUATION_CAP: 'graduation_cap'
     },
     
     // 비율 옵션 설정

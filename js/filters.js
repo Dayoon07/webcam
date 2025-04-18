@@ -181,7 +181,8 @@ class Filters {
             cat_face: 'applyCatFaceFilter',
             dog_face: 'applyDogFaceFilter',
             bear_face: 'applyBearFaceFilter',
-            rainbow_bg: 'applyRainbowBgFilter'
+            rainbow_bg: 'applyRainbowBgFilter',
+            graduation_cap: 'applyGraduationCapFilter'
         };
     
         for (const detection of detections) {
@@ -373,5 +374,36 @@ class Filters {
             // 곰 얼굴 이미지 적용
             image(this.filterImages.bear_face, bearFaceX, bearFaceY, bearFaceWidth, bearFaceHeight);
         }
+    }
+
+    /**
+     * 강아지 얼굴 필터 적용
+     */
+    applyGraduationCapFilter(detection, scaleFactor) {
+        const graduationCapImage = this.filterImages.graduation_cap;
+        if (!graduationCapImage) {
+            console.error("dog_face 이미지가 로드되지 않았습니다");
+            return;
+        }
+
+        const { leftEye, rightEye, nose } = detection.parts;
+        if (!leftEye?.length || !rightEye?.length || !nose?.length) {
+            console.warn("강아지 필터 적용 실패: 얼굴 특징점 부족");
+            return;
+        }
+
+        const leftCenter = Utils.calculateCenterPoint(leftEye);
+        const rightCenter = Utils.calculateCenterPoint(rightEye);
+        const noseCenter = Utils.calculateCenterPoint(nose);
+        const eyeDistance = dist(leftCenter.x, leftCenter.y, rightCenter.x, rightCenter.y);
+
+        const graduationCapWidth = eyeDistance * 6;
+        const graduationCapHeight = graduationCapWidth * 1.15;
+        const graduationCapX = (leftCenter.x + rightCenter.x) / 2 - graduationCapWidth / 2;
+        const graduationCapY = noseCenter.y - graduationCapHeight * 0.8;
+
+        push();
+        image(graduationCapImage, graduationCapX, graduationCapY, graduationCapWidth, graduationCapHeight);
+        pop();
     }
 }
