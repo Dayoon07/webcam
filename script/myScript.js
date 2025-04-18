@@ -17,7 +17,7 @@ function openFilter() {
     toggleModal("filter-options", true);
 }
 
-export function closeFilter() {
+function closeFilter() {
     toggleModal("filter-options", false);
 }
 

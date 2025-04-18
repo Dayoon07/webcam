@@ -96,7 +96,7 @@ class Core {
                 if (window.innerWidth < 768) {
                     // 모바일에서는 컨테이너 너비의 100%를 사용
                     canvasWidth = window.innerWidth;
-                    canvasHeight = canvasWidth * (16/9);
+                    canvasHeight = canvasWidth;
                     
                     // 높이가 화면보다 너무 커지지 않도록 제한
                     if (canvasHeight > window.innerHeight * 0.8) {
