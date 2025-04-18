@@ -5,7 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Escape") closeAllModals();
     });
 
-    
+    document.querySelectorAll(".filter-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            closeFilter();
+        });
+    });
 
 });
 

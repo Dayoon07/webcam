@@ -17,13 +17,30 @@ class Core {
      * 
      */
     preloadImages() {
-        this.filterImages = {
-            cowboyHat: loadImage('https://dayoon07.github.io/webcam/img/cowboy_hat.png', () => console.log('cowboy_hat 이미지 로드됨')),
-            sunglasses: loadImage('https://dayoon07.github.io/webcam/img/sunglasses.png', () => console.log('sunglasses 이미지 로드됨')),
-            heartEye: loadImage('https://dayoon07.github.io/webcam/img/heart.png', () => console.log('heart_eye 이미지 로드됨')),
-            white_circle: loadImage('https://dayoon07.github.io/webcam/img/white_circle.png', () => console.log('white_circle 이미지 로드됨')),
-            
-        };
+        try {
+            this.filterImages = {
+                // 기본 필터 이미지들
+                cowboy_hat: loadImage('https://dayoon07.github.io/webcam/img/cowboy_hat.png', 
+                    () => console.log('cowboy_hat 이미지 로드됨')),
+                sunglasses: loadImage('https://dayoon07.github.io/webcam/img/sunglasses.png', 
+                    () => console.log('sunglasses 이미지 로드됨')),
+                eye_heart: loadImage('https://dayoon07.github.io/webcam/img/heart.png', 
+                    () => console.log('heart_eye 이미지 로드됨')),
+                white_circle: loadImage('https://dayoon07.github.io/webcam/img/white_circle.png', 
+                    () => console.log('white_circle 이미지 로드됨')),
+                // 명명 규칙 통일 (snake_case로 통일)
+                cat_face: loadImage('https://dayoon07.github.io/webcam/img/cat_face.png', 
+                    () => console.log('cat_face 이미지 로드됨')),
+                dog_face: loadImage('https://dayoon07.github.io/webcam/img/dog_face.png', 
+                    () => console.log('dog_face 이미지 로드됨')),
+                bear_face: loadImage('https://dayoon07.github.io/webcam/img/bear_face.png', 
+                    () => console.log('bear_face 이미지 로드됨')),
+                rainbow_bg: loadImage('https://dayoon07.github.io/webcam/img/rainbow_bg.png', 
+                    () => console.log('rainbow_bg 이미지 로드됨'))
+            };
+        } catch (err) {
+            console.error("이미지 로드 중 오류 발생:", err);
+        }
     }
 
     /**

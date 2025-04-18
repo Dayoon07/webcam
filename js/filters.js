@@ -14,34 +14,42 @@ class Filters {
     }
 
     /**
-     * 감지된 얼굴에 선택된 필터 적용
-     * @param {Array} detections - 감지된 얼굴 배열
+     * applyFiltersToDetectedFaces 메서드를 확장하여 사용자 정의 필터 처리
      */
     applyFiltersToDetectedFaces(detections) {
+        if (!detections || !Array.isArray(detections)) {
+            console.warn("유효한 얼굴 인식 데이터가 없습니다");
+            return;
+        }
+
+        const toPascalCase = (str) => {
+            if (!str) return '';
+            return str
+                .replace(/[_-](\w)/g, (_, c) => c.toUpperCase()) // snake_case → camelCase
+                .replace(/^\w/, c => c.toUpperCase()); // 첫 글자 대문자
+        };
+
         for (const detection of detections) {
-            // 안전 확인: 얼굴 부위가 탐지되었는지
-            if (!Utils.hasValidFacialFeatures(detection)) {
-                continue; // 특징점이 없으면 다음 얼굴로 건너뜀
-            }
+            // 유효한 얼굴 특징점이 없으면 건너뛰기
+            if (!Utils.hasValidFacialFeatures(detection)) continue;
 
-            // 얼굴 크기에 따라 필터 크기 조정 계수
-            const faceWidth = detection.alignedRect._width;
-            const scaleFactor = faceWidth / 180; // 기준 얼굴 너비를 180px로 가정
+            try {
+                const faceWidth = detection.alignedRect?._width || 180; // 기본값으로 180 사용
+                const scaleFactor = faceWidth / 180;
+                const mirroredDetection = Utils.mirrorDetectionCoordinates(detection);
 
-            // 거울 모드에서 좌표 보정을 위한 준비
-            // 특징점 좌표 가공 수행
-            const mirroredDetection = Utils.mirrorDetectionCoordinates(detection);
+                // 현재 선택된 필터가 없으면 종료
+                if (!this.currentFilter) continue;
 
-            switch(this.currentFilter) {
-                case Config.FILTER_OPTIONS.COWBOY:      // 카우보이 필터
-                    this.applyCowboyFilter(mirroredDetection, scaleFactor);
-                    break;
-                case Config.FILTER_OPTIONS.EYE_HEART:   // 눈 하트 필터
-                    this.applyEyeHeartFilter(mirroredDetection, scaleFactor);
-                    break;
-                case Config.FILTER_OPTIONS.WHITE_CIRCLE:
-                    this.applyWhite_circleFilter(mirroredDetection, scaleFactor);
-                    break;
+                const methodName = `apply${toPascalCase(this.currentFilter)}Filter`;
+
+                if (typeof this[methodName] === 'function') {
+                    this[methodName](mirroredDetection, scaleFactor);
+                } else {
+                    console.warn(`해당 필터에 대한 적용 함수가 없습니다: ${methodName}`);
+                }
+            } catch (err) {
+                console.error("필터 적용 중 오류 발생:", err);
             }
         }
     }
@@ -100,7 +108,7 @@ class Filters {
             
             // 선글라스와 모자 적용
             image(this.filterImages.sunglasses, glassesX, glassesY, glassesWidth, glassesHeight);
-            image(this.filterImages.cowboyHat, hatX, hatY, hatWidth, hatHeight);
+            image(this.filterImages.cowboy_hat, hatX, hatY, hatWidth, hatHeight);
         }
     }
 
@@ -124,7 +132,7 @@ class Filters {
             
             // 왼쪽 눈에 하트 적용
             image(
-                this.filterImages.heartEye, 
+                this.filterImages.eye_heart, 
                 leftCenter.x - heartSize/2, 
                 leftCenter.y - heartSize/2, 
                 heartSize, 
@@ -133,7 +141,7 @@ class Filters {
             
             // 오른쪽 눈에 하트 적용
             image(
-                this.filterImages.heartEye, 
+                this.filterImages.eye_heart, 
                 rightCenter.x - heartSize/2, 
                 rightCenter.y - heartSize/2, 
                 heartSize, 
@@ -158,223 +166,43 @@ class Filters {
     }
 
     /**
-     * 사용자 정의 필터 추가 함수
-     * @param {string} filterId - 새 필터 ID
-     * @param {Object} filterImage - 추가할 필터 이미지
-     * @param {string} position - 필터 위치 ('eyes', 'nose', 'mouth', 'forehead', 'whole')
-     * @param {Object} options - 필터 위치 조정 옵션 (선택적)
-     * @returns {boolean} - 성공 여부
-     */
-    addCustomFilter(filterId, filterImage, position, options = {}) {
-        // 기본 옵션 설정
-        const defaultOptions = {
-            widthRatio: 1.0,    // 기준 크기 대비 너비 비율
-            heightRatio: 1.0,   // 기준 크기 대비 높이 비율
-            offsetX: 0,         // 수평 오프셋 (픽셀)
-            offsetY: 0,         // 수직 오프셋 (픽셀)
-            rotation: 0,        // 회전 각도 (도)
-            zIndex: 1           // 필터 레이어 순서
-        };
-        
-        // 사용자 옵션과 기본 옵션 병합
-        const filterOptions = { ...defaultOptions, ...options };
-        
-        // 필터 이미지 유효성 검사
-        if (!filterImage) {
-            console.error('필터 이미지가 제공되지 않았습니다.');
-            return false;
-        }
-        
-        // 필터 ID 유효성 검사
-        if (!filterId || typeof filterId !== 'string') {
-            console.error('유효한 필터 ID가 필요합니다.');
-            return false;
-        }
-        
-        // 위치 유효성 검사
-        const validPositions = ['eyes', 'nose', 'mouth', 'forehead', 'whole'];
-        if (!validPositions.includes(position)) {
-            console.error(`유효하지 않은 위치입니다. 다음 중 하나여야 합니다: ${validPositions.join(', ')}`);
-            return false;
-        }
-        
-        // 필터 이미지 등록
-        this.filterImages[filterId] = filterImage;
-        
-        // Config.FILTER_OPTIONS에 필터 ID 추가 (Config 객체가 있다고 가정)
-        if (Config && Config.FILTER_OPTIONS) {
-            Config.FILTER_OPTIONS[filterId.toUpperCase()] = filterId;
-        }
-        
-        // 필터 적용 함수 정의 및 등록
-        this[`apply${filterId.charAt(0).toUpperCase() + filterId.slice(1)}Filter`] = function(detection, scaleFactor) {
-            switch(position) {
-                case 'eyes':
-                    this.applyEyesPositionFilter(detection, scaleFactor, filterId, filterOptions);
-                    break;
-                case 'nose':
-                    this.applyNosePositionFilter(detection, scaleFactor, filterId, filterOptions);
-                    break;
-                case 'mouth':
-                    this.applyMouthPositionFilter(detection, scaleFactor, filterId, filterOptions);
-                    break;
-                case 'forehead':
-                    this.applyForeheadPositionFilter(detection, scaleFactor, filterId, filterOptions);
-                    break;
-                case 'whole':
-                    this.applyWholePositionFilter(detection, scaleFactor, filterId, filterOptions);
-                    break;
-            }
-        };
-        
-        console.log(`새 필터가 추가되었습니다: ${filterId} (위치: ${position})`);
-        return true;
-    }
-
-    /**
-     * 눈 위치에 필터 적용 (재사용 가능한 함수)
-     */
-    applyEyesPositionFilter(detection, scaleFactor, filterId, options) {
-        const { leftEye, rightEye } = detection.parts;
-        
-        if (leftEye && rightEye && leftEye.length > 0 && rightEye.length > 0) {
-            const leftCenter = Utils.calculateCenterPoint(leftEye);
-            const rightCenter = Utils.calculateCenterPoint(rightEye);
-            const eyeDistance = dist(leftCenter.x, leftCenter.y, rightCenter.x, rightCenter.y);
-            
-            // 눈 사이 거리를 기준으로 필터 크기 및 위치 조정
-            const filterWidth = eyeDistance * 2.2 * options.widthRatio;
-            const filterHeight = filterWidth * 0.6 * options.heightRatio;
-            const eyesY = (leftCenter.y + rightCenter.y) / 2;
-            const filterX = (leftCenter.x + rightCenter.x) / 2 - filterWidth / 2 + options.offsetX;
-            const filterY = eyesY - (filterHeight * 0.2) + options.offsetY;
-            
-            push(); // 현재 드로잉 상태 저장
-            translate(filterX + filterWidth/2, filterY + filterHeight/2);
-            rotate(options.rotation * PI / 180);
-            image(this.filterImages[filterId], -filterWidth/2, -filterHeight/2, filterWidth, filterHeight);
-            pop(); // 이전 드로잉 상태 복원
-        }
-    }
-
-    /**
-     * 코 위치에 필터 적용 (재사용 가능한 함수)
-     */
-    applyNosePositionFilter(detection, scaleFactor, filterId, options) {
-        const { nose } = detection.parts;
-        
-        if (nose && nose.length > 0) {
-            const center = Utils.calculateCenterPoint(nose);
-            const faceWidth = detection.alignedRect._width;
-            const filterSize = faceWidth * 0.3 * options.widthRatio; // 코 크기에 맞게 조정
-            const filterX = center.x - filterSize/2 + options.offsetX;
-            const filterY = center.y - filterSize/2 + options.offsetY;
-            
-            push();
-            translate(filterX + filterSize/2, filterY + filterSize/2);
-            rotate(options.rotation * PI / 180);
-            image(this.filterImages[filterId], -filterSize/2, -filterSize/2, 
-                filterSize, filterSize * options.heightRatio);
-            pop();
-        }
-    }
-
-    /**
-     * 입 위치에 필터 적용 (재사용 가능한 함수)
-     */
-    applyMouthPositionFilter(detection, scaleFactor, filterId, options) {
-        const { mouth } = detection.parts;
-        
-        if (mouth && mouth.length > 0) {
-            const mouthPoints = mouth.map(pt => ({ x: pt._x, y: pt._y }));
-            const leftPoint = mouthPoints.reduce((min, pt) => pt.x < min.x ? pt : min, mouthPoints[0]);
-            const rightPoint = mouthPoints.reduce((max, pt) => pt.x > max.x ? pt : max, mouthPoints[0]);
-            const topPoint = mouthPoints.reduce((min, pt) => pt.y < min.y ? pt : min, mouthPoints[0]);
-            const bottomPoint = mouthPoints.reduce((max, pt) => pt.y > max.y ? pt : max, mouthPoints[0]);
-            
-            const mouthWidth = dist(leftPoint.x, leftPoint.y, rightPoint.x, rightPoint.y);
-            const mouthHeight = dist(topPoint.x, topPoint.y, bottomPoint.x, bottomPoint.y);
-            const center = Utils.calculateCenterPoint(mouth);
-            
-            // 입 크기에 맞게 필터 크기 조정
-            const filterWidth = mouthWidth * 1.5 * options.widthRatio;
-            const filterHeight = mouthHeight * 2 * options.heightRatio;
-            const filterX = center.x - filterWidth/2 + options.offsetX;
-            const filterY = center.y - filterHeight/2 + options.offsetY;
-            
-            push();
-            translate(filterX + filterWidth/2, filterY + filterHeight/2);
-            rotate(options.rotation * PI / 180);
-            image(this.filterImages[filterId], -filterWidth/2, -filterHeight/2, filterWidth, filterHeight);
-            pop();
-        }
-    }
-
-    /**
-     * 이마 위치에 필터 적용 (재사용 가능한 함수)
-     */
-    applyForeheadPositionFilter(detection, scaleFactor, filterId, options) {
-        const { leftEye, rightEye } = detection.parts;
-        
-        if (leftEye && rightEye && leftEye.length > 0 && rightEye.length > 0) {
-            const leftCenter = Utils.calculateCenterPoint(leftEye);
-            const rightCenter = Utils.calculateCenterPoint(rightEye);
-            const eyeDistance = dist(leftCenter.x, leftCenter.y, rightCenter.x, rightCenter.y);
-            const eyesY = (leftCenter.y + rightCenter.y) / 2;
-            
-            // 이마 위치 계산 - 눈 위쪽
-            const foreheadY = eyesY - eyeDistance * 1.2;
-            const filterWidth = eyeDistance * 2 * options.widthRatio;
-            const filterHeight = eyeDistance * options.heightRatio;
-            const filterX = (leftCenter.x + rightCenter.x) / 2 - filterWidth / 2 + options.offsetX;
-            const filterY = foreheadY - filterHeight/2 + options.offsetY;
-            
-            push();
-            translate(filterX + filterWidth/2, filterY + filterHeight/2);
-            rotate(options.rotation * PI / 180);
-            image(this.filterImages[filterId], -filterWidth/2, -filterHeight/2, filterWidth, filterHeight);
-            pop();
-        }
-    }
-
-    /**
-     * 얼굴 전체에 필터 적용 (재사용 가능한 함수)
-     */
-    applyWholePositionFilter(detection, scaleFactor, filterId, options) {
-        // 얼굴 경계 상자 정보 가져오기
-        const box = detection.alignedRect._box;
-        const faceWidth = box._width;
-        const faceHeight = box._height;
-        
-        // 얼굴 크기에 맞게 필터 크기 조정
-        const filterWidth = faceWidth * options.widthRatio;
-        const filterHeight = faceHeight * options.heightRatio;
-        const filterX = box._x + (faceWidth - filterWidth) / 2 + options.offsetX;
-        const filterY = box._y + (faceHeight - filterHeight) / 2 + options.offsetY;
-        
-        push();
-        translate(filterX + filterWidth/2, filterY + filterHeight/2);
-        rotate(options.rotation * PI / 180);
-        image(this.filterImages[filterId], -filterWidth/2, -filterHeight/2, filterWidth, filterHeight);
-        pop();
-    }
-
-    /**
      * applyFiltersToDetectedFaces 메서드를 확장하여 사용자 정의 필터 처리
      */
     applyFiltersToDetectedFaces(detections) {
+        if (!detections || !Array.isArray(detections)) {
+            console.warn("유효한 얼굴 인식 데이터가 없습니다");
+            return;
+        }
+
+        const filterMethodMap = {
+            cowboy: 'applyCowboyFilter',
+            eye_heart: 'applyEyeHeartFilter',
+            white_circle: 'applyWhiteCircleFilter',
+            cat_face: 'applyCatFaceFilter',
+            dog_face: 'applyDogFaceFilter',
+            bear_face: 'applyBearFaceFilter',
+            rainbow_bg: 'applyRainbowBgFilter'
+        };
+    
         for (const detection of detections) {
             if (!Utils.hasValidFacialFeatures(detection)) continue;
-    
-            const faceWidth = detection.alignedRect._width;
-            const scaleFactor = faceWidth / 180;
-            const mirroredDetection = Utils.mirrorDetectionCoordinates(detection);
-    
-            const methodName = `apply${this.currentFilter.charAt(0).toUpperCase()}${this.currentFilter.slice(1)}Filter`;
-            if (typeof this[methodName] === 'function') {
-                this[methodName](mirroredDetection, scaleFactor);
-            } else {
-                console.warn(`해당 필터에 대한 적용 함수가 없습니다: ${methodName}`);
+
+            try {
+                const faceWidth = detection.alignedRect?._width || 180;
+                const scaleFactor = faceWidth / 180;
+                const mirroredDetection = Utils.mirrorDetectionCoordinates(detection);
+
+                if (!this.currentFilter) continue;
+
+                const methodName = filterMethodMap[this.currentFilter];
+
+                if (typeof this[methodName] === 'function') {
+                    this[methodName](mirroredDetection, scaleFactor);
+                } else {
+                    console.warn(`해당 필터에 대한 적용 함수가 없습니다: ${methodName}`);
+                }
+            } catch (err) {
+                console.error("필터 적용 중 오류 발생:", err);
             }
         }
     }
@@ -384,8 +212,7 @@ class Filters {
      * @param {Object} detection - 얼굴 인식 결과
      * @param {number} scaleFactor - 얼굴 크기 비례 계수
      */
-    applyWhite_circleFilter(detection, scaleFactor) {
-        console.log("applyWhiteCircleFilter 실행됨");
+    applyWhiteCircleFilter(detection, scaleFactor) {
         // 얼굴 경계 상자 확인
         if (!detection.alignedRect || !detection.alignedRect._box) {
             console.error("얼굴 경계 상자 정보가 없습니다");
@@ -398,7 +225,7 @@ class Filters {
         const faceHeight = box._height;
         
         // 필터 크기 조정 (더 크게 만들어서 얼굴 전체 가리기)
-        const filterSize = Math.max(faceWidth, faceHeight) * 1.5;
+        const filterSize = Math.max(faceWidth, faceHeight) * 1.25;
         
         // 캔버스의 기준 좌표계에 맞춰 얼굴 중심 위치 계산
         const faceCenterX = box._x + faceWidth/2;
@@ -418,8 +245,6 @@ class Filters {
             
             // 이미지 대체 흰색 원
             push();
-            fill(255);
-            noStroke();
             ellipse(adjustedCenterX, faceCenterY, filterSize, filterSize);
             pop();
         } else {
@@ -428,7 +253,125 @@ class Filters {
             image(this.filterImages.white_circle, filterX, filterY, filterSize, filterSize);
             pop();
         }
+    }
+
+    /**
+     * 고양이 얼굴 필터 적용 (안정성 개선)
+     */
+    applyCatFaceFilter(detection, scaleFactor) {
+        const canvasWidth = typeof width !== 'undefined' ? width : 640;
+        const canvasHeight = typeof height !== 'undefined' ? height : 480;
+
+        const catImage = this.filterImages.cat_face;
+        if (!catImage) {
+            console.error("cat_face 이미지가 로드되지 않았습니다");
+            return;
+        }
+
+        try {
+            const { leftEye, rightEye } = detection.parts;
+            if (!leftEye?.length || !rightEye?.length) {
+                console.warn("고양이 필터 적용 실패: 눈 정보 부족");
+                return;
+            }
+
+            const box = detection.alignedRect?._box;
+            if (!box) {
+                console.warn("고양이 필터 적용 실패: 얼굴 경계 상자 없음");
+                return;
+            }
+
+            const faceWidth = box._width;
+            const faceHeight = box._height;
+
+            // 필터의 너비는 얼굴 너비보다 약간 넓게
+            const filterWidth = faceWidth * 1.1;
+
+            // 원본 이미지 비율 고려해서 높이 자동 계산
+            const filterHeight = filterWidth * 1.1;
+
+            // 얼굴 중심 계산
+            const faceCenterX = box._x + faceWidth / 2;
+            const faceCenterY = box._y + faceHeight / 2;
+
+            // 캔버스가 좌우 반전된 경우 고려
+            const adjustedCenterX = canvasWidth - faceCenterX;
+
+            // 필터 위치 계산 (조금 위로 이동해서 고양이 귀가 머리 위에 올라오도록)
+            const filterX = adjustedCenterX - filterWidth / 2;
+            const filterY = faceCenterY - filterHeight * 0.8; // 이 부분은 살짝 조정해보면서 튜닝 가능
+
+            if (filterX + filterWidth < 0 || filterX > canvasWidth ||
+                filterY + filterHeight < 0 || filterY > canvasHeight) {
+                console.warn("고양이 필터가 화면 밖에 있음");
+                return;
+            }
+
+            push();
+            image(catImage, filterX, filterY, filterWidth, filterHeight);
+            pop();
+        } catch (err) {
+            console.error("고양이 필터 적용 중 오류:", err);
+        }
+    }
+
+    /**
+     * 강아지 얼굴 필터 적용
+     */
+    applyDogFaceFilter(detection, scaleFactor) {
+        const dogImage = this.filterImages.dog_face;
+        if (!dogImage) {
+            console.error("dog_face 이미지가 로드되지 않았습니다");
+            return;
+        }
+
+        const { leftEye, rightEye, nose } = detection.parts;
+        if (!leftEye?.length || !rightEye?.length || !nose?.length) {
+            console.warn("강아지 필터 적용 실패: 얼굴 특징점 부족");
+            return;
+        }
+
+        const leftCenter = Utils.calculateCenterPoint(leftEye);
+        const rightCenter = Utils.calculateCenterPoint(rightEye);
+        const noseCenter = Utils.calculateCenterPoint(nose);
+
+        const eyeDistance = dist(leftCenter.x, leftCenter.y, rightCenter.x, rightCenter.y);
+        const dogFaceWidth = eyeDistance * 3.1;
+        const dogFaceHeight = dogFaceWidth;
+        const dogFaceX = (leftCenter.x + rightCenter.x) / 2 - dogFaceWidth / 2;
+        const dogFaceY = noseCenter.y - dogFaceHeight * 0.8;
+
+        push();
+        image(dogImage, dogFaceX, dogFaceY, dogFaceWidth, dogFaceHeight);
+        pop();
+    }
+
+    /**
+     * 곰 얼굴 필터 적용
+     * @param {Object} detection - 얼굴 인식 결과
+     * @param {number} scaleFactor - 얼굴 크기 비례 계수
+     */
+    applyBearFaceFilter(detection, scaleFactor) {
+        const { leftEye, rightEye, nose } = detection.parts;
         
-        console.log("흰색 원 필터 적용됨", filterX, filterY, filterSize);
+        if (leftEye && rightEye && nose && leftEye.length > 0 && rightEye.length > 0) {
+            const leftCenter = Utils.calculateCenterPoint(leftEye);
+            const rightCenter = Utils.calculateCenterPoint(rightEye);
+            const noseCenter = Utils.calculateCenterPoint(nose);
+            
+            // 눈 사이 거리 계산
+            const eyeDistance = dist(leftCenter.x, leftCenter.y, rightCenter.x, rightCenter.y);
+            
+            // 곰 얼굴 요소 크기 계산
+            const bearFaceWidth = eyeDistance * 3.25;
+            const bearFaceHeight = bearFaceWidth * 1.1;
+            
+            // 곰 얼굴 위치 (코 주변에 배치)
+            const bearFaceX = (leftCenter.x + rightCenter.x) / 2 - bearFaceWidth / 2;
+            const bearFaceY = noseCenter.y - bearFaceHeight * 0.8; // 코 위치 조정
+            
+            // 곰 얼굴 이미지 적용
+            image(this.filterImages.bear_face, bearFaceX, bearFaceY, bearFaceWidth, bearFaceHeight);
+        }
     }
 }

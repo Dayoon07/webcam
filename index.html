@@ -18,7 +18,8 @@
     </div>
 
     <div class="max-w-4xl mx-auto w-full flex flex-col">
-        <div id="canvas-container" class="w-full overflow-hidden mb-6"></div>
+        <div id="canvas-container" class="w-full overflow-hidden mb-6">
+        </div>
 
         <!-- 설정 버튼 -->
         <div class="flex justify-center items-center my-4">
@@ -39,9 +40,12 @@
         <!-- 필터 옵션 -->
         <div id="filter-options" class="hidden">
             <div class="flex flex-wrap gap-2 mt-16">
+                <button id="filter-dog_face" onclick="selectFilter('dog_face')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">강아지</button>
+                <button id="filter-cat_face" onclick="selectFilter('cat_face')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">고양이</button>
+                <button id="filter-bear_face" onclick="selectFilter('bear_face')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">곰</button>
                 <button id="filter-white_circle" onclick="selectFilter('white_circle')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">얼굴 가림</button>
                 <button id="filter-cowboy" onclick="selectFilter('cowboy')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">카우보이</button>
-                <button id="filter-eyeHeart" onclick="selectFilter('eyeHeart')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">눈 하트</button>
+                <button id="filter-eye_heart" onclick="selectFilter('eye_heart')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">눈 하트</button>
                 <button id="filter-none" onclick="selectFilter('')" class="filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg">없음</button>
             </div>
         </div>

@@ -6,14 +6,14 @@ const Config = {
     */
     FILTER_OPTIONS: {
         COWBOY: 'cowboy',
-        EYE_HEART: 'eyeHeart',
-        WHITE_CIRCLE: 'white_circle',
+        EYE_HEART: 'eye_heart',  // 'eyeHeart'에서 변경
+        WHITE_CIRCLE: 'white_circle', 
         CAT_FACE: 'cat_face',
         DOG_FACE: 'dog_face',
         BEAR_FACE: 'bear_face',
         RAINBOW_BG: 'rainbow_bg'
     },
-
+    
     // 비율 옵션 설정
     ASPECT_RATIOS: {
         FULL: 'full',    // 전체 화면
