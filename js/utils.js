@@ -21,7 +21,7 @@ class Utils {
         }
 
         if (validPoints === 0) {
-            return { x: width/2, y: height/2 }; // 유효한 점이 없으면 기본값 반환
+            return { x: width / 2, y: height / 2 }; // 유효한 점이 없으면 기본값 반환
         }
 
         return {
