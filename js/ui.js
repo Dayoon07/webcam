@@ -1,7 +1,6 @@
 class UI {
     constructor(filters) {
         this.filters = filters;
-        this.downloadCounter = 0;
     }
 
     /**
@@ -15,10 +14,18 @@ class UI {
      * 현재 캔버스를 이미지로 캡처하고 즉시 다운로드
      */
     captureAndDownloadImage() {
+        const year = new Date().getFullYear();
+        const month = String(new Date().getMonth() + 1).padStart(2, '0');
+        const day = String(new Date().getDate()).padStart(2, '0');
+        const hour = String(new Date().getHours()).padStart(2, '0');
+        const minute = String(new Date().getMinutes()).padStart(2, '0');
+        const second = String(new Date().getSeconds()).padStart(2, '0');
+        const dateString = `${year}${month}${day}_${hour}${minute}${second}`;
+
         const imageData = canvas.toDataURL();
         const downloadLink = document.createElement('a');
         downloadLink.href = imageData;
-        downloadLink.download = `webcam_filter_${this.downloadCounter++}.jpg`;
+        downloadLink.download = `webcam_filter_${dateString}.jpg`;
         downloadLink.click();
     }
 
