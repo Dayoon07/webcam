@@ -45,7 +45,7 @@ class Core {
                 rainbow_bg: loadImage('https://dayoon07.github.io/webcam/img/rainbow_bg.png', 
                     () => console.log('rainbow_bg 이미지 로드됨')
                 ),
-                graduation_cap: loadImage('/img/graduation_cap.png', 
+                graduation_cap: loadImage('https://dayoon07.github.io/webcam/img/graduation_cap.png', 
                     () => console.log('graduation_cap 이미지 로드됨')
                 )
             };

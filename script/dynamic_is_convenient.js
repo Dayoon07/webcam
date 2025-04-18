@@ -66,7 +66,10 @@ function aaaaaaaaaaaaaa() {
         const button = document.createElement("button");
         button.id = item.id;
         button.className = "filter-button px-4 py-2 bg-gray-100 transition-all rounded-lg";
-        button.innerHTML = item.src != null ? `<img src="${item.src}" alt="${item.text}" title="${item.text}" width="35" height="35" />` : `${item.text}`;
+        button.innerHTML = 
+        item.src != null ? `<img src="${item.src}" alt="${item.text}" 
+                                title="${item.text}" width="35" height="35" />
+                            ` : `${item.text}`;
         button.onclick = function () {
             selectFilter(item.selectName);
             closeFilter();
