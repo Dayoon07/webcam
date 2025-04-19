@@ -12,7 +12,8 @@ const Config = {
         DOG_FACE: 'dog_face',
         BEAR_FACE: 'bear_face',
         RAINBOW_BG: 'rainbow_bg',
-        GRADUATION_CAP: 'graduation_cap'
+        GRADUATION_CAP: 'graduation_cap',
+        KMHS_LOGO: 'kmhs_logo'
     },
     
     // 비율 옵션 설정

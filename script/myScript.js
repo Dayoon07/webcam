@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
             closeFilter();
         });
     });
-
 });
 
 function openFilter() {

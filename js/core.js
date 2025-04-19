@@ -47,7 +47,10 @@ class Core {
                 ),
                 graduation_cap: loadImage('https://dayoon07.github.io/webcam/img/graduation_cap.png', 
                     () => console.log('graduation_cap 이미지 로드됨')
-                )
+                ),
+                kmhs_logo: loadImage('https://dayoon07.github.io/webcam/img/kmhs_logo.png', 
+                    () => console.log('kmhs_logo 이미지 로드됨')
+                ),
             };
         } catch (err) {
             console.error("이미지 로드 중 오류 발생:", err);

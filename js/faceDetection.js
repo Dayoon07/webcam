@@ -19,6 +19,8 @@ class FaceDetection {
     modelReady() {
         console.log('Face API 준비 완료!');
         this.faceapi.detect((err, result) => this.handleFaceDetectionResults(err, result));
+        document.getElementById("setting-btn").style.display = "block";
+        document.getElementById("filter-btn").style.display = "block";
     }
 
     /**

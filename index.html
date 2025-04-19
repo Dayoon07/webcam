@@ -24,7 +24,8 @@
         <!-- 설정 버튼 -->
         <div class="flex justify-center items-center my-4">
             <div>
-                <img src="https://dayoon07.github.io/webcam/offcial/setting.png" onclick="openSetting()" class="w-16 h-16 md:w-20 md:h-20 p-2 cursor-pointer hover:scale-105 transition">
+                <img src="https://dayoon07.github.io/webcam/offcial/setting.png" class="w-16 h-16 md:w-20 md:h-20 p-2 cursor-pointer hover:scale-105 transition" 
+                    style="display: none;" onclick="openSetting()" id="setting-btn">
             </div>
     
             <div onclick="window.func.captureAndDownloadImage()" title="사진 찍기" aria-label="사진 찍기" class="w-16 h-16 mx-10 
@@ -33,7 +34,8 @@
             </div>
     
             <div>
-                <img src="https://dayoon07.github.io/webcam/offcial/filter.png" onclick="openFilter()" class="w-16 h-16 md:w-20 md:h-20 p-2 cursor-pointer hover:scale-105 transition">
+                <img src="https://dayoon07.github.io/webcam/offcial/filter.png" class="w-16 h-16 md:w-20 md:h-20 p-2 cursor-pointer hover:scale-105 transition" 
+                    style="display: none;" onclick="openFilter()" id="filter-btn">
             </div>
         </div>
         

@@ -182,7 +182,8 @@ class Filters {
             dog_face: 'applyDogFaceFilter',
             bear_face: 'applyBearFaceFilter',
             rainbow_bg: 'applyRainbowBgFilter',
-            graduation_cap: 'applyGraduationCapFilter'
+            graduation_cap: 'applyGraduationCapFilter',
+            kmhs_logo: 'applyKmhsLogoFilter'
         };
     
         for (const detection of detections) {
@@ -402,6 +403,30 @@ class Filters {
         const graduationCapX = (leftCenter.x + rightCenter.x) / 2 - graduationCapWidth / 2;
         const graduationCapY = noseCenter.y - graduationCapHeight * 0.8;
 
+        push();
+        image(graduationCapImage, graduationCapX, graduationCapY, graduationCapWidth, graduationCapHeight);
+        pop();
+    }
+
+    applyKmhsLogoFilter(detection, scaleFactor) {
+        const graduationCapImage = this.filterImages.kmhs_logo;
+        if (!graduationCapImage) {
+            console.error("kmhs_logo 이미지가 로드되지 않았습니다");
+            return;
+        }
+        
+        // p5.js의 width와 height 전역 변수 사용 (캔버스 크기)
+        const canvasWidth = width;
+        const canvasHeight = height;
+        
+        // 로고 크기 설정
+        const graduationCapWidth = canvasWidth * 0.2;
+        const graduationCapHeight = graduationCapWidth;
+        
+        // 왼쪽 아래 위치로 수정
+        const graduationCapX = 20; // 왼쪽에서 20px 여백
+        const graduationCapY = canvasHeight - graduationCapHeight - 20; // 아래에서 20px 여백
+        
         push();
         image(graduationCapImage, graduationCapX, graduationCapY, graduationCapWidth, graduationCapHeight);
         pop();
