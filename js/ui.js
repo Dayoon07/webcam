@@ -25,7 +25,7 @@ class UI {
         const imageData = canvas.toDataURL();
         const downloadLink = document.createElement('a');
         downloadLink.href = imageData;
-        downloadLink.download = `webcam_filter_${dateString}.png`;
+        downloadLink.download = `캠스_${dateString}.png`;
         downloadLink.click();
     }
 

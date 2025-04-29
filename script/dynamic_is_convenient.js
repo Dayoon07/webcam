@@ -6,6 +6,24 @@ window.addEventListener("load", function () {
 function aaaaaaaaaaaaaa() {
     const aaaaa_list = [
         {
+            id: "filter-polaroid_pic", 
+            selectName: "polaroid_pic", 
+            text: "폴라로이드 느낌 사진",
+            src: "https://dayoon07.github.io/webcam/img/polaroid_pic.png"
+        },
+        {
+            id: "filter-white_vector", 
+            selectName: "white_vector", 
+            text: "피부 반짝이 효과",
+            src: "https://dayoon07.github.io/webcam/img/white_vector.png"
+        },
+        {
+            id: "filter-christmas_bg", 
+            selectName: "christmas_bg", 
+            text: "크리스마스 배경",
+            src: "https://dayoon07.github.io/webcam/img/christmas_bg.png"
+        },
+        {
             id: "filter-graduation_cap", 
             selectName: "graduation_cap", 
             text: "학사모",

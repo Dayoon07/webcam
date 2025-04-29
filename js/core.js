@@ -51,6 +51,15 @@ class Core {
                 kmhs_logo: loadImage('https://dayoon07.github.io/webcam/img/kmhs_logo.png', 
                     () => console.log('kmhs_logo 이미지 로드됨')
                 ),
+                christmas_bg: loadImage('https://dayoon07.github.io/webcam/img/christmas_bg.png',
+                    () => console.log('christmas_bg 이미지 로드됨')
+                ),
+                white_vector: loadImage('https://dayoon07.github.io/webcam/img/white_vector.png', 
+                    () => console.log('white_vector 이미지 로드됨')
+                ),
+                polaroid_pic: loadImage('https://dayoon07.github.io/webcam/img/polaroid_pic.png',
+                    () => console.log('polaroid_pic 이미지 로드됨')
+                )
             };
         } catch (err) {
             console.error("이미지 로드 중 오류 발생:", err);

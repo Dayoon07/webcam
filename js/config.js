@@ -13,7 +13,10 @@ const Config = {
         BEAR_FACE: 'bear_face',
         RAINBOW_BG: 'rainbow_bg',
         GRADUATION_CAP: 'graduation_cap',
-        KMHS_LOGO: 'kmhs_logo'
+        KMHS_LOGO: 'kmhs_logo',
+        CHRISTMAS_BG: 'christmas_bg',
+        WHITE_VECTOR: 'white_vector',
+        POLAROID_PIC: 'polaroid_pic'
     },
     
     // 비율 옵션 설정

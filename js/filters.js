@@ -183,7 +183,10 @@ class Filters {
             bear_face: 'applyBearFaceFilter',
             rainbow_bg: 'applyRainbowBgFilter',
             graduation_cap: 'applyGraduationCapFilter',
-            kmhs_logo: 'applyKmhsLogoFilter'
+            kmhs_logo: 'applyKmhsLogoFilter',
+            christmas_bg: 'applyChristmasBgFilter',
+            white_vector: 'applyWhiteVectorFilter',
+            polaroid_pic: 'applyPolaroidPicFilter'
         };
     
         for (const detection of detections) {
@@ -429,6 +432,93 @@ class Filters {
         
         push();
         image(graduationCapImage, graduationCapX, graduationCapY, graduationCapWidth, graduationCapHeight);
+        pop();
+    }
+
+    /**
+     * 크리스마스 배경 필터 적용 - 전체 화면에 크리스마스 배경 적용
+     * @param {Object} detection - 얼굴 인식 결과
+     * @param {number} scaleFactor - 얼굴 크기 비례 계수
+     */
+    applyChristmasBgFilter(detection, scaleFactor) {
+        const christmasBgImage = this.filterImages.christmas_bg;
+        if (!christmasBgImage) {
+            console.error("christmas_bg 이미지가 로드되지 않았습니다");
+            return;
+        }
+        
+        // p5.js의 width와 height 전역 변수 사용 (캔버스 크기)
+        const canvasWidth = width;
+        const canvasHeight = height;
+        
+        // 이미지를 전체 화면에 적용
+        push();
+        // 먼저 배경 이미지를 그려서 다른 모든 요소 뒤에 표시되도록 함
+        image(christmasBgImage, 0, 0, canvasWidth, canvasHeight);
+        pop();
+    }
+
+    applyWhiteVectorFilter(detection, scaleFactor) {
+        const maskImage = this.filterImages.white_vector;
+        if (!maskImage) {
+            console.error("squid_game_mask 이미지가 로드되지 않았습니다");
+            return;
+        }
+
+        try {
+            // 얼굴 경계 상자 확인
+            if (!detection.alignedRect || !detection.alignedRect._box) {
+                console.warn("오징어 게임 마스크 필터 적용 실패: 얼굴 경계 상자 없음");
+                return;
+            }
+            
+            // 캔버스 크기
+            const canvasWidth = typeof width !== 'undefined' ? width : 640;
+            
+            // 얼굴 경계 상자 정보
+            const box = detection.alignedRect._box;
+            const faceWidth = box._width;
+            const faceHeight = box._height;
+            
+            // 마스크 크기 조정 (얼굴보다 약간 더 크게)
+            const maskWidth = faceWidth * 1.5;
+            const maskHeight = maskWidth * 1.2; // 마스크 이미지 비율에 맞게 조정
+            
+            // 얼굴 중심 계산
+            const faceCenterX = box._x + faceWidth / 2;
+            const faceCenterY = box._y + faceHeight / 2;
+            
+            // 캔버스의 좌우 반전 고려
+            const adjustedCenterX = canvasWidth - faceCenterX;
+            
+            // 마스크 위치 계산 (얼굴 중앙에 배치)
+            const maskX = adjustedCenterX - maskWidth / 2;
+            const maskY = faceCenterY - maskHeight / 2;
+            
+            // 마스크 이미지 적용
+            push();
+            image(maskImage, maskX, maskY, maskWidth, maskHeight);
+            pop();
+        } catch (err) {
+            console.error("오징어 게임 마스크 필터 적용 중 오류:", err);
+        }
+    }
+
+    applyPolaroidPicFilter(detection, scaleFactor) {
+        const christmasBgImage = this.filterImages.polaroid_pic;
+        if (!christmasBgImage) {
+            console.error("polaroid_pic 이미지가 로드되지 않았습니다");
+            return;
+        }
+        
+        // p5.js의 width와 height 전역 변수 사용 (캔버스 크기)
+        const canvasWidth = width;
+        const canvasHeight = height;
+        
+        // 이미지를 전체 화면에 적용
+        push();
+        // 먼저 배경 이미지를 그려서 다른 모든 요소 뒤에 표시되도록 함
+        image(christmasBgImage, 0, 0, canvasWidth, canvasHeight);
         pop();
     }
 }
