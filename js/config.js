@@ -15,8 +15,8 @@ const Config = {
         GRADUATION_CAP: 'graduation_cap',
         KMHS_LOGO: 'kmhs_logo',
         CHRISTMAS_BG: 'christmas_bg',
-        WHITE_VECTOR: 'white_vector',
-        POLAROID_PIC: 'polaroid_pic'
+        POLAROID_PIC: 'polaroid_pic',
+        INSTARGRAM_POPULAR_FILTER: 'instagram_popular_filter'
     },
     
     // 비율 옵션 설정

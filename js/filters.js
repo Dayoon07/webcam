@@ -185,8 +185,8 @@ class Filters {
             graduation_cap: 'applyGraduationCapFilter',
             kmhs_logo: 'applyKmhsLogoFilter',
             christmas_bg: 'applyChristmasBgFilter',
-            white_vector: 'applyWhiteVectorFilter',
-            polaroid_pic: 'applyPolaroidPicFilter'
+            polaroid_pic: 'applyPolaroidPicFilter',
+            instagram_popular_filter: 'applyInstagramPopularFilter'
         };
     
         for (const detection of detections) {
@@ -458,52 +458,6 @@ class Filters {
         pop();
     }
 
-    applyWhiteVectorFilter(detection, scaleFactor) {
-        const maskImage = this.filterImages.white_vector;
-        if (!maskImage) {
-            console.error("squid_game_mask 이미지가 로드되지 않았습니다");
-            return;
-        }
-
-        try {
-            // 얼굴 경계 상자 확인
-            if (!detection.alignedRect || !detection.alignedRect._box) {
-                console.warn("오징어 게임 마스크 필터 적용 실패: 얼굴 경계 상자 없음");
-                return;
-            }
-            
-            // 캔버스 크기
-            const canvasWidth = typeof width !== 'undefined' ? width : 640;
-            
-            // 얼굴 경계 상자 정보
-            const box = detection.alignedRect._box;
-            const faceWidth = box._width;
-            const faceHeight = box._height;
-            
-            // 마스크 크기 조정 (얼굴보다 약간 더 크게)
-            const maskWidth = faceWidth * 1.5;
-            const maskHeight = maskWidth * 1.2; // 마스크 이미지 비율에 맞게 조정
-            
-            // 얼굴 중심 계산
-            const faceCenterX = box._x + faceWidth / 2;
-            const faceCenterY = box._y + faceHeight / 2;
-            
-            // 캔버스의 좌우 반전 고려
-            const adjustedCenterX = canvasWidth - faceCenterX;
-            
-            // 마스크 위치 계산 (얼굴 중앙에 배치)
-            const maskX = adjustedCenterX - maskWidth / 2;
-            const maskY = faceCenterY - maskHeight / 2;
-            
-            // 마스크 이미지 적용
-            push();
-            image(maskImage, maskX, maskY, maskWidth, maskHeight);
-            pop();
-        } catch (err) {
-            console.error("오징어 게임 마스크 필터 적용 중 오류:", err);
-        }
-    }
-
     applyPolaroidPicFilter(detection, scaleFactor) {
         const christmasBgImage = this.filterImages.polaroid_pic;
         if (!christmasBgImage) {
@@ -519,6 +473,49 @@ class Filters {
         push();
         // 먼저 배경 이미지를 그려서 다른 모든 요소 뒤에 표시되도록 함
         image(christmasBgImage, 0, 0, canvasWidth, canvasHeight);
+        pop();
+    }
+
+    applyInstagramPopularFilter(detection, scaleFactor) {
+        const filterImage = this.filterImages.instagram_popular_filter;
+        if (!filterImage) {
+            console.error("instagram_popular_filter 이미지가 로드되지 않았습니다");
+            return;
+        }
+    
+        const { leftEye, rightEye, nose, jawOutline } = detection.parts;
+        if (!leftEye?.length || !rightEye?.length) {
+            console.warn("필터 적용 실패: 얼굴 특징점 부족");
+            return;
+        }
+    
+        // 얼굴 영역 계산
+        const leftCenter = Utils.calculateCenterPoint(leftEye);
+        const rightCenter = Utils.calculateCenterPoint(rightEye);
+        const eyeDistance = dist(leftCenter.x, leftCenter.y, rightCenter.x, rightCenter.y);
+        
+        // 얼굴 중심점 계산
+        const faceCenter = {
+            x: (leftCenter.x + rightCenter.x) / 2,
+            y: leftCenter.y
+        };
+        
+        // 얼굴 크기에 비례하여 필터 크기 조정 (더 작게)
+        const filterWidth = eyeDistance * 2.5; // 더 작은 크기로 조정
+        const filterHeight = filterWidth;
+        
+        // 필터 위치 조정 - 얼굴에 더 맞게
+        const filterX = faceCenter.x - filterWidth / 2;
+        const filterY = faceCenter.y - filterHeight * 0.3; // 덜 위쪽으로 조정
+        
+        push();
+        // 투명도 조정
+        tint(255, 220); // 약간 더 선명하게
+        
+        // 필터 이미지 그리기
+        image(filterImage, filterX, filterY, filterWidth, filterHeight);
+        
+        noTint();
         pop();
     }
 }

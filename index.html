@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>캠스</title>
-
+    <meta name="description" content="Snap the Moment, Smartly.">
+    <meta property="og:image" content="https://dayoon07.github.io/webcam/offcial/logo.png">
+    <link rel="shortcut icon" href="https://dayoon07.github.io/webcam/offcial/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://dayoon07.github.io/webcam/css/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>KM Snap</title>
 </head>
 <body class="bg-gray-100">
     <!-- 로딩 화면 -->
@@ -16,6 +19,13 @@
             <p class="text-gray-600">카메라 준비 중...</p>
         </div>
     </div>
+
+    <header class="w-full p-4">
+        <a href="https://dayoon07.github.io/webcam" class="block flex items-center">
+            <img src="https://dayoon07.github.io/webcam/offcial/logo.png" alt="로고" class="max-md:w-12 md:w-16 rounded-full">
+            <h2 class="mx-5 font-semibold text-xl">KM Snap</h2>
+        </a>
+    </header>
 
     <div class="max-w-4xl mx-auto w-full flex flex-col">
         <div id="canvas-container" class="w-full overflow-hidden mb-6"></div>
@@ -93,7 +103,7 @@
     </div>
 
     <footer class="text-center text-gray-600 mt-8 mb-4">
-        <p>&copy; 2024. dayoon07 All rights reserved & <br class="md:hidden" /> KeunMyung High School.</p>
+        <p>&copy; 2024 dayoon07 for KeunMyung High School. All rights reserved.</p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>

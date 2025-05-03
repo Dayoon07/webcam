@@ -6,16 +6,16 @@ window.addEventListener("load", function () {
 function aaaaaaaaaaaaaa() {
     const aaaaa_list = [
         {
+            id: "filter-instagram_popular_filter", 
+            selectName: "instagram_popular_filter", 
+            text: "인스타그램 피부 반짝이 이미지",
+            src: "https://dayoon07.github.io/webcam/img/instagram_popular_filter.png"
+        },
+        {
             id: "filter-polaroid_pic", 
             selectName: "polaroid_pic", 
             text: "폴라로이드 느낌 사진",
             src: "https://dayoon07.github.io/webcam/img/polaroid_pic.png"
-        },
-        {
-            id: "filter-white_vector", 
-            selectName: "white_vector", 
-            text: "피부 반짝이 효과",
-            src: "https://dayoon07.github.io/webcam/img/white_vector.png"
         },
         {
             id: "filter-christmas_bg", 

@@ -54,11 +54,11 @@ class Core {
                 christmas_bg: loadImage('https://dayoon07.github.io/webcam/img/christmas_bg.png',
                     () => console.log('christmas_bg 이미지 로드됨')
                 ),
-                white_vector: loadImage('https://dayoon07.github.io/webcam/img/white_vector.png', 
-                    () => console.log('white_vector 이미지 로드됨')
-                ),
                 polaroid_pic: loadImage('https://dayoon07.github.io/webcam/img/polaroid_pic.png',
                     () => console.log('polaroid_pic 이미지 로드됨')
+                ),
+                instagram_popular_filter: loadImage('https://dayoon07.github.io/webcam/img/instagram_popular_filter.png',
+                    () => console.log('instagram_popular_filter 이미지 로드됨')
                 )
             };
         } catch (err) {
