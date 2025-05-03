@@ -1,6 +1,6 @@
 window.addEventListener("load", function () {
     "use strict";
-    aaaaaaaaaaaaaa(); // 함수 호출!
+    aaaaaaaaaaaaaa();
 });
 
 function aaaaaaaaaaaaaa() {
