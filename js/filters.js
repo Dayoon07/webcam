@@ -109,6 +109,7 @@ class Filters {
             // 선글라스와 모자 적용
             image(this.filterImages.sunglasses, glassesX, glassesY, glassesWidth, glassesHeight);
             image(this.filterImages.cowboy_hat, hatX, hatY, hatWidth, hatHeight);
+            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         }
     }
 
@@ -147,21 +148,8 @@ class Filters {
                 heartSize, 
                 heartSize
             );
-        }
-    }
 
-    /**
-     * 컴퓨터 필터 적용 - 코 위치에 컴퓨터 이미지 추가
-     * @param {Object} detection - 얼굴 인식 결과
-     * @param {number} scaleFactor - 얼굴 크기 비례 계수
-     */
-    applyComputerFilter(detection, scaleFactor) {
-        const { nose } = detection.parts;
-        
-        if (nose && nose.length > 0) {
-            const center = Utils.calculateCenterPoint(nose);
-            const size = 100 * scaleFactor;
-            image(this.filterImages.computer, center.x - size/2, center.y - size/2, size, size);
+            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         }
     }
 
@@ -256,6 +244,7 @@ class Filters {
             push();
             // 이미지 적용
             image(this.filterImages.white_circle, filterX, filterY, filterSize, filterSize);
+            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
             pop();
         }
     }
@@ -314,6 +303,7 @@ class Filters {
 
             push();
             image(catImage, filterX, filterY, filterWidth, filterHeight);
+            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
             pop();
         } catch (err) {
             console.error("고양이 필터 적용 중 오류:", err);
@@ -348,6 +338,7 @@ class Filters {
 
         push();
         image(dogImage, dogFaceX, dogFaceY, dogFaceWidth, dogFaceHeight);
+        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
     }
 
@@ -377,6 +368,7 @@ class Filters {
             
             // 곰 얼굴 이미지 적용
             image(this.filterImages.bear_face, bearFaceX, bearFaceY, bearFaceWidth, bearFaceHeight);
+            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         }
     }
 
@@ -408,6 +400,7 @@ class Filters {
 
         push();
         image(graduationCapImage, graduationCapX, graduationCapY, graduationCapWidth, graduationCapHeight);
+        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
     }
 
@@ -455,6 +448,7 @@ class Filters {
         push();
         // 먼저 배경 이미지를 그려서 다른 모든 요소 뒤에 표시되도록 함
         image(christmasBgImage, 0, 0, canvasWidth, canvasHeight);
+        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
     }
 
@@ -473,6 +467,7 @@ class Filters {
         push();
         // 먼저 배경 이미지를 그려서 다른 모든 요소 뒤에 표시되도록 함
         image(christmasBgImage, 0, 0, canvasWidth, canvasHeight);
+        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
     }
 
@@ -514,6 +509,7 @@ class Filters {
         
         // 필터 이미지 그리기
         image(filterImage, filterX, filterY, filterWidth, filterHeight);
+        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         
         noTint();
         pop();

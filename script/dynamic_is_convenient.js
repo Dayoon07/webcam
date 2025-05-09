@@ -66,12 +66,6 @@ function aaaaaaaaaaaaaa() {
             src: "https://dayoon07.github.io/webcam/img/heart.png"
         },
         {
-            id: "filter-kmhs_logo", 
-            selectName: "kmhs_logo", 
-            text: "근명고등학교 로고",
-            src: "https://dayoon07.github.io/webcam/img/kmhs_logo.png"
-        },
-        {
             id: "filter-none", 
             selectName: "", 
             text: "없음",
