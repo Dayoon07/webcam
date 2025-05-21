@@ -169,7 +169,6 @@ class Filters {
             cat_face: 'applyCatFaceFilter',
             dog_face: 'applyDogFaceFilter',
             bear_face: 'applyBearFaceFilter',
-            rainbow_bg: 'applyRainbowBgFilter',
             graduation_cap: 'applyGraduationCapFilter',
             kmhs_logo: 'applyKmhsLogoFilter',
             christmas_bg: 'applyChristmasBgFilter',
