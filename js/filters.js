@@ -55,6 +55,31 @@ class Filters {
     }
 
     /**
+     * 로고와 텍스트를 추가하는 공통 함수
+     */
+    addLogoAndText() {
+        // 로고와 텍스트
+        const logoSize = width * 0.2;
+        const logoX = 10;
+        const logoY = height - logoSize - logoX;
+        
+        image(this.filterImages.kmhs_logo, logoX, logoY, logoSize, logoSize);
+        
+        // 텍스트 설정
+        fill(255); // 흰색 텍스트
+        stroke(0); // 검은색 테두리
+        strokeWeight(2);
+        textAlign(LEFT, CENTER);
+        textSize(logoSize * 0.2); // 로고 크기에 비례한 텍스트 크기
+        
+        // 텍스트 위치 (로고 오른쪽)
+        const textX = logoX + logoSize + 10; // 로고 오른쪽에 10px 간격
+        const textY = logoY + logoSize / 2; // 로고 중앙 높이
+        
+        text("근명고(KEUNMYUNG HIGH SCHOOL)", textX, textY);
+    }
+
+    /**
      * 안경 필터 적용 - 눈 위치에 안경 이미지 추가
      * @param {Object} detection - 얼굴 인식 결과
      * @param {number} scaleFactor - 얼굴 크기 비례 계수
@@ -75,6 +100,7 @@ class Filters {
             const glassesY = eyesY - (glassesHeight * 0.2);
             
             image(this.filterImages.glasses, glassesX, glassesY, glassesWidth, glassesHeight);
+            this.addLogoAndText();
         }
     }
 
@@ -104,12 +130,13 @@ class Filters {
             const hatWidth = glassesWidth * 1.8;
             const hatHeight = hatWidth * 0.66;
             const hatX = (leftCenter.x + rightCenter.x) / 2 - hatWidth / 2;
-            const hatY = eyesY - hatHeight * 1.2; // 이마 위쪽에 배치
+            const hatY = eyesY - hatHeight * 1.2;
             
             // 선글라스와 모자 적용
             image(this.filterImages.sunglasses, glassesX, glassesY, glassesWidth, glassesHeight);
             image(this.filterImages.cowboy_hat, hatX, hatY, hatWidth, hatHeight);
-            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
+            
+            this.addLogoAndText();
         }
     }
 
@@ -149,7 +176,7 @@ class Filters {
                 heartSize
             );
 
-            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
+            this.addLogoAndText();
         }
     }
 
@@ -243,9 +270,10 @@ class Filters {
             push();
             // 이미지 적용
             image(this.filterImages.white_circle, filterX, filterY, filterSize, filterSize);
-            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
             pop();
         }
+        
+        this.addLogoAndText();
     }
 
     /**
@@ -302,8 +330,9 @@ class Filters {
 
             push();
             image(catImage, filterX, filterY, filterWidth, filterHeight);
-            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
             pop();
+            
+            this.addLogoAndText();
         } catch (err) {
             console.error("고양이 필터 적용 중 오류:", err);
         }
@@ -337,8 +366,9 @@ class Filters {
 
         push();
         image(dogImage, dogFaceX, dogFaceY, dogFaceWidth, dogFaceHeight);
-        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
+        
+        this.addLogoAndText();
     }
 
     /**
@@ -367,23 +397,23 @@ class Filters {
             
             // 곰 얼굴 이미지 적용
             image(this.filterImages.bear_face, bearFaceX, bearFaceY, bearFaceWidth, bearFaceHeight);
-            image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
+            this.addLogoAndText();
         }
     }
 
     /**
-     * 강아지 얼굴 필터 적용
+     * 졸업모자 필터 적용
      */
     applyGraduationCapFilter(detection, scaleFactor) {
         const graduationCapImage = this.filterImages.graduation_cap;
         if (!graduationCapImage) {
-            console.error("dog_face 이미지가 로드되지 않았습니다");
+            console.error("graduation_cap 이미지가 로드되지 않았습니다");
             return;
         }
 
         const { leftEye, rightEye, nose } = detection.parts;
         if (!leftEye?.length || !rightEye?.length || !nose?.length) {
-            console.warn("강아지 필터 적용 실패: 얼굴 특징점 부족");
+            console.warn("졸업모자 필터 적용 실패: 얼굴 특징점 부족");
             return;
         }
 
@@ -399,8 +429,9 @@ class Filters {
 
         push();
         image(graduationCapImage, graduationCapX, graduationCapY, graduationCapWidth, graduationCapHeight);
-        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
+        
+        this.addLogoAndText();
     }
 
     applyKmhsLogoFilter(detection, scaleFactor) {
@@ -425,6 +456,8 @@ class Filters {
         push();
         image(graduationCapImage, graduationCapX, graduationCapY, graduationCapWidth, graduationCapHeight);
         pop();
+        
+        this.addLogoAndText();
     }
 
     /**
@@ -447,8 +480,9 @@ class Filters {
         push();
         // 먼저 배경 이미지를 그려서 다른 모든 요소 뒤에 표시되도록 함
         image(christmasBgImage, 0, 0, canvasWidth, canvasHeight);
-        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
+        
+        this.addLogoAndText();
     }
 
     applyPolaroidPicFilter(detection, scaleFactor) {
@@ -466,8 +500,9 @@ class Filters {
         push();
         // 먼저 배경 이미지를 그려서 다른 모든 요소 뒤에 표시되도록 함
         image(christmasBgImage, 0, 0, canvasWidth, canvasHeight);
-        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         pop();
+        
+        this.addLogoAndText();
     }
 
     applyInstagramPopularFilter(detection, scaleFactor) {
@@ -508,9 +543,10 @@ class Filters {
         
         // 필터 이미지 그리기
         image(filterImage, filterX, filterY, filterWidth, filterHeight);
-        image(this.filterImages.kmhs_logo, 20, height - (width * 0.2) - 20, width * 0.2, width * 0.2);
         
         noTint();
         pop();
+        
+        this.addLogoAndText();
     }
 }
