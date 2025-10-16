@@ -161,29 +161,43 @@ class Core {
         }
     }
 
-    /**
-     * 비디오 캡처 초기화
+     /**
+     * 비디오 캡처 초기화 (빠른 시작)
      */
     initVideoCapture() {
-        this.video = createCapture(VIDEO);
+        // 카메라 즉시 시작
+        this.video = createCapture(VIDEO, () => {
+            console.log('카메라 준비 완료!');
+            // 카메라가 준비되면 UI 업데이트
+            if (this.ui) {
+                this.ui.updateLoadingProgress('카메라 연결 완료!');
+            }
+        });
         this.video.size(width, height);
         this.video.hide();
     }
 
     /**
-     * 앱 초기화
+     * 앱 초기화 (최적화됨)
      */
     initApp() {
         frameRate(60);
         this.createResponsiveCanvas();
+        
+        // UI 먼저 초기화
+        this.filters = new Filters(this.filterImages);
+        this.ui = new UI(this.filters);
+        this.ui.updateLoadingProgress('카메라 연결 중...');
+        
+        // 카메라 초기화 (비동기로 빠르게 시작)
         this.initVideoCapture();
         
-        this.filters = new Filters(this.filterImages);
+        // 얼굴 인식 초기화 (카메라와 병렬로 진행)
+        this.ui.updateLoadingProgress('얼굴 인식 모델 로딩 중...');
         this.faceDetection = new FaceDetection(this.video, this.filters);
         this.faceDetection.initFaceDetection();
         
-        this.ui = new UI(this.filters);
-        this.ui.hideLoadingProgress();
-        this.ui.exposeFunctionsToWindow(this); // 코어 객체도 UI에 전달
+        // 전역 함수 노출
+        this.ui.exposeFunctionsToWindow(this);
     }
 }

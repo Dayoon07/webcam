@@ -18,9 +18,31 @@ class FaceDetection {
      */
     modelReady() {
         console.log('Face API 준비 완료!');
-        this.faceapi.detect((err, result) => this.handleFaceDetectionResults(err, result));
+        
+        // UI 업데이트
+        const ui = document.querySelector('.text-gray-600');
+        if (ui) {
+            ui.textContent = '모든 준비 완료!';
+        }
+        
+        // 버튼 표시
         document.getElementById("setting-btn").style.display = "block";
         document.getElementById("filter-btn").style.display = "block";
+        
+        // 얼굴 인식 시작
+        this.faceapi.detect((err, result) => this.handleFaceDetectionResults(err, result));
+        
+        // 로딩 화면 숨기기 (약간의 지연 후)
+        setTimeout(() => {
+            const loadingEl = document.getElementById("loadingProgress");
+            if (loadingEl) {
+                loadingEl.style.opacity = '0';
+                loadingEl.style.transition = 'opacity 0.3s ease-out';
+                setTimeout(() => {
+                    loadingEl.style.display = "none";
+                }, 300);
+            }
+        }, 500);
     }
 
     /**

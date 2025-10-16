@@ -4,10 +4,30 @@ class UI {
     }
 
     /**
+     * 로딩 진행 상태 업데이트
+     */
+    updateLoadingProgress(message) {
+        const loadingEl = document.getElementById("loadingProgress");
+        if (loadingEl) {
+            const textEl = loadingEl.querySelector('p');
+            if (textEl) {
+                textEl.textContent = message;
+            }
+        }
+    }
+
+    /**
      * 로딩 진행 상태 숨기기
      */
     hideLoadingProgress() {
-        document.getElementById("loadingProgress").style.display = "none";
+        const loadingEl = document.getElementById("loadingProgress");
+        if (loadingEl) {
+            loadingEl.style.opacity = '0';
+            loadingEl.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => {
+                loadingEl.style.display = "none";
+            }, 300);
+        }
     }
 
     /**
